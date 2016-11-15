@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SecondApp</string>
+    <string name="FirstName">First Name</string>
+    <string name="LastName">Last Name</string>
+
+</resources>

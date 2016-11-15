@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="2">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/text1"
+        android:background="@color/colorPrimary"
+        android:text="Names"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:drawableTop="@color/colorAccent"
+        />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/text1"
+        android:id="@+id/listView"
+        android:background="@color/colorAccent"></ListView>
+
+
+</RelativeLayout>
