@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">LandscapeAndPortraitSuitableApp</string>
+    <string name="name">I am Landscape</string>
+    <string name="number">6434672</string>
+    <string name="description">Image of android logo</string>
+</resources>

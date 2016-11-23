@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/launch_c_single_top"
+        android:id="@+id/button_c1"
+        android:layout_marginTop="@dimen/margin_top"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:text="@string/launch_new_instance_a"
+        android:id="@+id/button_c2"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:id="@+id/button_c3"
+        android:text="@string/launch_new_task"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:id="@+id/button_c4"
+        android:text="@string/launch_after_clearing_stack"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_c5"
+        android:text="@string/launch_new_instance_a_clear_stack"
+        android:layout_marginTop="@dimen/margin_top"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:hint="@string/hint"
+        android:gravity="center"/>
+
+
+</LinearLayout>

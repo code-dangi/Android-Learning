@@ -1,6 +1,5 @@
 package com.bt.contactlist;
 
-import java.util.Objects;
 import java.util.Random;
 
 /**

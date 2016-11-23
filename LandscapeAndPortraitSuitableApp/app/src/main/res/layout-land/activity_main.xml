@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent">
+    <ImageView
+        android:layout_width="@dimen/logo_width"
+        android:layout_height="@dimen/logo_height"
+        android:id="@+id/image_landscape"
+        android:src="@drawable/android_logo"
+        android:layout_marginTop="@dimen/top_margin"
+        android:contentDescription="@string/description"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name_landscape"
+        android:text="@string/name"
+        android:textSize="@dimen/text_size"
+        android:layout_toEndOf="@id/image_landscape"
+        android:layout_toRightOf="@id/image_landscape"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/top_margin"
+        android:layout_below="@id/image_landscape"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/number_landscape"
+        android:textSize="@dimen/text_size"
+        android:layout_toRightOf="@id/image_landscape"
+        android:layout_toEndOf="@id/image_landscape"
+        android:layout_marginTop="@dimen/top_margin"
+        android:layout_below="@id/name_landscape"
+        android:text="@string/number"/>
+
+</RelativeLayout>

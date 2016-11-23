@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,8 +17,8 @@ import java.util.ArrayList;
  */
 
 public class ListFragment extends Fragment {
-    CustomAdapter mAdapter;
-    private onClickItemListner itemListner;
+    private CustomAdapter mAdapter;
+    private onClickItemListner mItemListner;
     static final int nContacts=20;
     static final String name_list="name_list";
     static final String fragFlag="frag_indicator";
@@ -32,7 +31,7 @@ public class ListFragment extends Fragment {
         super.onAttach(context);
         if(context instanceof onClickItemListner )
         {
-            itemListner= (onClickItemListner) context;
+            mItemListner = (onClickItemListner) context;
         }
         else{
             throw new RuntimeException(context.toString()+" should Implement item click listener");
@@ -69,7 +68,7 @@ public class ListFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                itemListner.onItemClick(Contact.get(position));
+                mItemListner.onItemClick(Contact.get(position));
             }
         });
         return view;
@@ -125,7 +124,7 @@ public class ListFragment extends Fragment {
     }
 
     public interface onClickItemListner {
-       void onItemClick(Contacts contacts);
+        void onItemClick(Contacts contacts);
     }
 
 }

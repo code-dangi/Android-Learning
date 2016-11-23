@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RightAlignedTextView</string>
+    <string name="button_right_aligned_view"> Click to see Right Aligned View</string>
+    <string name="right_aligned_text">This is Right Aligned Text</string>
+</resources>

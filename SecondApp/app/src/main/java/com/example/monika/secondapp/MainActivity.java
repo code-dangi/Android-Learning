@@ -13,7 +13,8 @@ import static android.R.attr.name;
 import static android.R.attr.supportsAssist;
 
 public class MainActivity extends AppCompatActivity {
-    static final String EXTRA_NAME = "com.example.EXTRA_NAME";
+    static final String EXTRA_NAME = "com.bt.EXTRA_NAME";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

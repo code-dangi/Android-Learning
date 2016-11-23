@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RightAlignedTextViewExtendingView">
+        <attr name="name" format="string"></attr>
+        <attr name="left_align" format="boolean"></attr>
+        <attr name="right_align" format="boolean"></attr>
+        <attr name="text" format="string"></attr>
+        <attr name="height" format="dimension"></attr>
+        <attr name="width" format="dimension"></attr>
+        <attr name="background_color" format="color"></attr>
+        <attr name="corner_radius" format="float"></attr>
+    </declare-styleable>
+    <declare-styleable name="RightAlignedTextViewExtendingTextView">
+        <attr name="is_left_align" format="boolean"></attr>
+    </declare-styleable>
+</resources>

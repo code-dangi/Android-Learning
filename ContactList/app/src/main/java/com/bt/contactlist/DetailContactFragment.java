@@ -21,7 +21,7 @@ public class DetailContactFragment extends Fragment {
     static final String fragFlag="frag_indicator";
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-       super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
 
     }
@@ -29,7 +29,7 @@ public class DetailContactFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-         view =inflater.inflate(R.layout.fragment_detail,container,false);
+        view =inflater.inflate(R.layout.fragment_detail,container,false);
         if(savedInstanceState!=null){
             TextView textView1 = (TextView) view.findViewById(R.id.name);
             textView1.setText(savedInstanceState.getCharSequence(text1));

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size">20sp</dimen>
+    <dimen name="logo_height">200dp</dimen>
+    <dimen name="logo_width">200dp</dimen>
+    <dimen name="top_margin">20dp</dimen>
+</resources>

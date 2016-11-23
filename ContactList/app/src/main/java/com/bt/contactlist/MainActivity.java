@@ -2,52 +2,44 @@ package com.bt.contactlist;
 
 /**
  * Created by Monika on 11/11/2016.
+ * Launching Activity
  */
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.*;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+
 public class MainActivity extends AppCompatActivity implements ListFragment.onClickItemListner {
-    static final String fragFlag="frag_indicator";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(savedInstanceState==null){
-            FragmentManager fragmentManager= getSupportFragmentManager();
+        if(savedInstanceState == null){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             if(isTablet(this)) {
                 ListFragment fragment1 = new ListFragment();
-                transaction.add(R.id.container, fragment1, "frag1");
-                DetailContactFragment detailContactFragment =new DetailContactFragment();
-                transaction.add(R.id.container2,detailContactFragment,"frag2");
+                transaction.add(R.id.container, fragment1, getResources().getString(R.string.tag_list_frag));
+                DetailContactFragment detailContactFragment = new DetailContactFragment();
+                transaction.add(R.id.container2, detailContactFragment, getResources().getString(R.string.tag_detail_frag));
                 transaction.commit();
             }
             else{
                 ListFragment fragment1 = new ListFragment();
-                transaction.add(R.id.container, fragment1, "frag1");
+                transaction.add(R.id.container, fragment1, getResources().getString(R.string.tag_list_frag));
                 transaction.commit();
             }
-         }
-        else {//if(savedInstanceState.getInt(fragFlag)==0){
-            FragmentManager fragmentManager= getSupportFragmentManager();
+        }
+        else {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             ListFragment fragment1=new ListFragment();
-            transaction.add(R.id.container,fragment1,"frag1");
+            transaction.add(R.id.container,fragment1,getResources().getString(R.string.tag_list_frag));
             transaction.commit();
         }
-        /*else {
-            FragmentManager fragmentManager= getSupportFragmentManager();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            DetailContactFragment detailContactFragment =new DetailContactFragment();
-            transaction.add(R.id.container,detailContactFragment,"frag2");
-            transaction.commit();
-        }*/
     }
 
     public void onItemClick(Contacts contacts){
@@ -108,4 +100,5 @@ public class MainActivity extends AppCompatActivity implements ListFragment.onCl
         super.onDestroy();
 
     }
+
 }

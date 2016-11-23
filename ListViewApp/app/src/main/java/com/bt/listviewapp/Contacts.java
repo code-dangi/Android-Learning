@@ -1,70 +1,76 @@
 package com.bt.listviewapp;
 
 /**
+ * POJO for contact that contains Phone Number and Name
  * Created by Monika on 11/10/2016.
  */
 import java.util.Random;
 
 public class Contacts {
-    private int id;
-    private String name;
-    private String number;
-    Random rand = new Random();
-    public int getId() {
-        return id;
+    private final String DEFALUT_NAME = "name";
+    private int mId;
+    private String mName;
+    private String mPhoneNumber;
+    private Random mRand = new Random();
+
+
+    public String getPhoneNumber() {
+        return mPhoneNumber;
     }
 
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
+    public void setPhoneNumber(String mPhoneNumber) {
+        this.mPhoneNumber = mPhoneNumber;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String mName) {
+        this.mName = mName;
     }
 
-    public void setId(int id) {
+    public int getmId(){
+        return mId;
+    }
+    public void setmId(int mId) {
 
-        this.id = id;
+        this.mId = mId;
     }
 
-    public Contacts(int id, String name, String number) {
-        this.id = id;
-        this.name = name;
-        this.number = number;
+    public Contacts(int mId, String mName, String mPhoneNumber ) {
+        this.mId = mId;
+        this.mName = mName;
+        this.mPhoneNumber = mPhoneNumber;
     }
 
-    public Contacts(int id, String name) {
-        this.id=id;
-        this.name=name;
-
-    }
-    public Contacts(int i){
-        setId(i);
+    public Contacts( int i ){
+        setmId(i);
         setName(genrateDummyName(i));
-        setNumber(genrateDummyNumber());
+        setPhoneNumber(genrateDummyNumber());
     }
 
     public String toString(){
         return this.getName();
     }
+    
     public String genrateDummyNumber(){
-        setNumber(convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9))+convertToString(rand.nextInt(9)));
-        return getNumber();
+        setPhoneNumber(convertToString(mRand.nextInt(9))+convertToString(mRand.nextInt(9))
+                +convertToString(mRand.nextInt(9))+convertToString(mRand.nextInt(9))
+                +convertToString(mRand.nextInt(9))+convertToString(mRand.nextInt(9))
+                +convertToString(mRand.nextInt(9))+convertToString(mRand.nextInt(9))
+                +convertToString(mRand.nextInt(9)));
+        return getPhoneNumber();
     }
+    
     public String genrateDummyName(int i){
-        return "name"+i;
+        return DEFALUT_NAME+i;
     }
+    
     protected String convertToString(Integer i ){
         return i.toString();
     }
+
     public Contacts(){}
 
 }

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">UsageOfIntentFlagsApp</string>
+    <string name="launch_b">Click to launch B on same stack </string>
+    <string name="launch_c">Click to launch C on same stack</string>
+    <string name="launch_c_single_top">Click to launch the previous instance of C only, as single Top</string>
+    <string name="launch_new_instance_a">Click to launch new instance of C on same stack</string>
+    <string name="launch_new_instance_a_clear_stack">Click to launch new instance of A after clearing stack</string>
+    <string name="launch_new_task">Click to launch new activity A in new stack</string>
+    <string name="hint">To maintain the state of activity</string>
+    <string name="launch_after_clearing_stack">Click to launch previous state of activity A and clearing the top stack</string>
+</resources>
