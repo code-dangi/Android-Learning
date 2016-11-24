@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- for layered drawable-->
+    <dimen name="item_top">10dp</dimen>
+    <dimen name="item_left">10dp</dimen>
+    <dimen name="item_2_top">30dp</dimen>
+    <dimen name="item_2_left">30dp</dimen>
+
+    <!-- for image width and height-->
+    <dimen name="image_height">100dp</dimen>
+    <dimen name="image_width">100dp</dimen>
+
+    <!--for oval width and height for face and pink circle-->
+    <dimen name="oval_width">300dp</dimen>
+    <dimen name="oval_height">300dp</dimen>
+
+    <!--for oval width and height for eyes and blue color-->
+    <dimen name="oval_eye_width">30dp</dimen>
+    <dimen name="oval_eye_height">30dp</dimen>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+    <ImageView
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/drawable_android_logo"
+        android:contentDescription="@string/content_description"/>
+    <ImageView
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/layer_list_example"
+        android:layout_marginTop="@dimen/item_top"
+        android:contentDescription="@string/content_description"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_focus"
+        android:text="@string/button_1"
+        android:textColor="@android:color/black"
+        android:background="@drawable/button_state_list"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/item_top" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/face"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/item_2_top"
+        android:contentDescription="@string/content_description"/>
+</LinearLayout>

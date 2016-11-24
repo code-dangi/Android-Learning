@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">UsageOfDrawable</string>
+    <string name="button_1">Check the states by clicking the button</string>
+    <string name="content_description">Image of android logo</string>
+</resources>
