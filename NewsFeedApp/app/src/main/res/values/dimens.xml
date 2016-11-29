@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--height-->
+    <dimen name="height_title">80dp</dimen>
+    <dimen name="height_date">40dp</dimen>
+    <dimen name="height_place">40dp</dimen>
+
+    <!--width-->
+    <dimen name="width_title">100dp</dimen>
+
+    <!-- line width of divider-->
+    <dimen name="line_width">10dp</dimen>
+</resources>

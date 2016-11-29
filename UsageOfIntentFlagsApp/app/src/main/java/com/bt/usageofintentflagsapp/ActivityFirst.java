@@ -12,7 +12,7 @@ import android.widget.Button;
  * launching Activity
  */
 
-public class ActivityA extends AppCompatActivity {
+public class ActivityFirst extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,37 +21,19 @@ public class ActivityA extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchActivityB(v);
+                launchActivityB();
             }
         });
     }
 
     /**
      * Launching Activity B on button click
-     * @param v
+     *
      */
-    private void launchActivityB(View v){
-        Intent intent = new Intent(this, ActivityB.class);
+    private void launchActivityB(){
+        Intent intent = new Intent(this, ActivitySecond.class);
         startActivity(intent);
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

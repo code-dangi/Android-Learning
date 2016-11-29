@@ -11,11 +11,17 @@ import android.view.View;
  * This Activity starts activities having specific intent flag on button click
  */
 
-public class ActivityC extends AppCompatActivity implements View.OnClickListener{
+public class ActivityThird extends AppCompatActivity implements View.OnClickListener{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_c);
+        findViewById(R.id.button_c1).setOnClickListener(this);
+        findViewById(R.id.button_c2).setOnClickListener(this);
+        findViewById(R.id.button_c3).setOnClickListener(this);
+        findViewById(R.id.button_c4).setOnClickListener(this);
+        findViewById(R.id.button_c5).setOnClickListener(this);
+
     }
     /**
      * Implement onclick and setting all button actions
@@ -45,7 +51,7 @@ public class ActivityC extends AppCompatActivity implements View.OnClickListener
      * Launch activity C single Top, No new instance will be created
      */
     private void launchActivitySingleTop(){
-        Intent intent = new Intent(this, ActivityC.class);
+        Intent intent = new Intent(this, ActivityThird.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
@@ -54,7 +60,7 @@ public class ActivityC extends AppCompatActivity implements View.OnClickListener
      * Launch activity A on the top of same stack
      */
     private void launchActivityOnSameStack(){
-        Intent intent = new Intent(this, ActivityC.class);
+        Intent intent = new Intent(this, ActivityThird.class);
         startActivity(intent);
     }
 
@@ -62,7 +68,7 @@ public class ActivityC extends AppCompatActivity implements View.OnClickListener
      * Launch Activity in new stack
      */
     private void launchActivityOnNewStack(){
-        Intent intent = new Intent(this, ActivityA.class);
+        Intent intent = new Intent(this, ActivityFirst.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -70,7 +76,7 @@ public class ActivityC extends AppCompatActivity implements View.OnClickListener
      * Launch Activity A, it will clear the stack and new instance will be the root of the stack
      */
     private void launchActivityClearingStack(){
-        Intent intent = new Intent(this, ActivityA.class);
+        Intent intent = new Intent(this, ActivityFirst.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
@@ -79,39 +85,10 @@ public class ActivityC extends AppCompatActivity implements View.OnClickListener
      * Resume the Activity A and clear the stack top of it
      */
     private void resumeActivityClearStack(){
-        Intent intent = new Intent(this, ActivityA.class);
+        Intent intent = new Intent(this, ActivityFirst.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

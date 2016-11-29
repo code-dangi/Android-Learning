@@ -2,9 +2,11 @@
 <resources>
     <!-- Dimension for text size -->
     <dimen name="text_size">20sp</dimen>
+
     <!--Dimensions for height and width -->
     <dimen name="logo_height">200dp</dimen>
     <dimen name="logo_width">200dp</dimen>
+
    <!-- Dimension for margins-->
     <dimen name="top_margin">20dp</dimen>
 </resources>

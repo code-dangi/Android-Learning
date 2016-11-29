@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">CustomDialouge</string>
+    <string name="app_name">CustomDialog</string>
+    <!--attributes for sample dialog-->
+    <string name="sample_message">This is sample message, Its container that can contain a layout, a list or selection list</string>
+    <string name="sample_title">Here comes the Title for the Dialog</string>
+    <string name="sample_button">Click me to launch Simple Dialog </string>
+    <string name="sample_tag">Sample Dialog</string>
+
+    <string name="cancel">Cancel me</string>
+    <string name="ok">Feel OK</string>
+    <string name="neutral">No Reaction</string>
 </resources>

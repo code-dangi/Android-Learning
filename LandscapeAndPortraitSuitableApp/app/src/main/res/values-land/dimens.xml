@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--text size-->
     <dimen name="text_size">30sp</dimen>
+
+    <!-- height and width of image icon-->
     <dimen name="logo_height">200dp</dimen>
     <dimen name="logo_width">300dp</dimen>
+
+    <!--Margins-->
     <dimen name="top_margin">30dp</dimen>
 </resources>

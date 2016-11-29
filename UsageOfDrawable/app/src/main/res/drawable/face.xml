@@ -7,12 +7,10 @@
         android:left="70dp"
         android:bottom="200dp"
         android:right="180dp"/>
-        <!--android:gravity="left|center_vertical"-->
     <item android:drawable="@drawable/filled_circle_eye"
         android:top="40dp"
         android:left="170dp"
         android:right="80dp"
-        android:bottom="200dp"
-        /><!--android:gravity="right|center_vertical"-->
+        android:bottom="200dp"/>
 
 </layer-list>

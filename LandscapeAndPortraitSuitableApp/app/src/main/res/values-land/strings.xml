@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LandscapeAndPortraitSuitableApp</string>
+    <string name="app_name">@string/app_name</string>
     <string name="name">I am Landscape</string>
     <string name="number">897675</string>
 </resources>

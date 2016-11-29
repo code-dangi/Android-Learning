@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">ContactList</string>
+    <!--fragment tags-->
     <string name="tag_list_frag">frag1</string>
     <string name="tag_detail_frag">frag2</string>
+
+    <!--bundle attribute names-->
+    <string name="name_list">name list</string>
+    <string name="name">Name var in bundle</string>
+    <string name="number">Number var in bundle</string>
+
+    <!---->
 </resources>

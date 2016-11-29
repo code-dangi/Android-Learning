@@ -1,6 +1,22 @@
 <resources>
     <string name="app_name">LoginValidationApp</string>
+    <!--hints for edit view-->
     <string name="user_id_hint">Enter the Email id</string>
     <string name="pass_hint">Enter the password</string>
+
+    <!-- button texts-->
     <string name="button_login">Log In</string>
+    <string name="cancel">Cancel Me</string>
+    <string name="OK">OK</string>
+
+    <!--sample values for authentication-->
+    <string name="user_id_default">user@ab.com</string>
+    <string name="number_default">12345678</string>
+
+    <!--Tags-->
+    <string name="dialog_tag">Validation Dialog</string>
+
+    <!--validation messages-->
+    <string name="valid">Valid email and password, You can continue</string>
+    <string name="invalid">Invalid password or email, try once more</string>
 </resources>

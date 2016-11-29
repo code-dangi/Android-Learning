@@ -10,6 +10,7 @@ import android.widget.EditText;
 
 /**
  * Created by Monika on 11/17/2016.
+ * second activity
  */
 
 public class DisplayNameActivity extends AppCompatActivity {

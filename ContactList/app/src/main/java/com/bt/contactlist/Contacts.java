@@ -67,6 +67,6 @@ public class Contacts {
     protected String convertToString(Integer i ){
         return i.toString();
     }
-    public Contacts(){}
+
 
 }
