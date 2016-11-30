@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Monika on 11/29/2016.
- * Custom adapter to bind view and data
+ * Custom adapter to bind view and data for recyclerView
  */
 
 class CustomAdapter extends RecyclerView.Adapter {
@@ -37,12 +37,10 @@ class CustomAdapter extends RecyclerView.Adapter {
         mNewsList = newsList;
     }
 
-
     /**
      *  constructor for adapter
      * @param parent parent view
-     * @param viewType viewType is set internally
-     * @return
+     * @return custom view holder is returned
      */
     @Override
     public CustomAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -64,9 +62,12 @@ class CustomAdapter extends RecyclerView.Adapter {
         ((TextView) vh.mView.findViewById(R.id.place)).setText(mNewsList.get(position).getPlace());
     }
 
-
     @Override
     public int getItemCount() {
         return mNewsList.size();
     }
+    /*public void setNewsList(ArrayList<News> mNewsList) {
+        this.mNewsList = mNewsList;
+        notifyDataSetChanged();
+    }*/
 }

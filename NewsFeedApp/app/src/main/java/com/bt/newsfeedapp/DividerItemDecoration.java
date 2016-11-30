@@ -1,6 +1,5 @@
 package com.bt.newsfeedapp;
 
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +7,7 @@ import android.view.View;
 
 /**
  * Created by Monika on 11/29/2016.
- * to decorate the item appearance in recycle view
+ * To decorate the item appearance in recycle view
  */
 
 public class DividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -28,10 +27,10 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
         if (parent.getChildAdapterPosition(view) == 0) {
             return;
         }
-        outRect.top = mDivider.getIntrinsicHeight();
+        outRect.top = 10;
     }
 
-    @Override
+   /* @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDraw(c, parent, state);
         int dividerLeft = parent.getPaddingLeft();
@@ -49,5 +48,5 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             mDivider.setBounds(dividerLeft, dividerTop, dividerRight, dividerBottom);
             mDivider.draw(c);
         }
-    }
+    }*/
 }

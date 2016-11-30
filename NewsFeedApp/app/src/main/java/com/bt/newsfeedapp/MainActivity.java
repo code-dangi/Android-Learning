@@ -16,48 +16,62 @@ import java.util.ArrayList;
  * It shows the list of news
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DownloadNewsAsyncTask.OnInteractToActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecyclerAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<News> mNewsList;
     private static final String TAG = MainActivity.class.getSimpleName();
-
+    private ArrayList<News> mNewsList;
+    private DownloadNewsAsyncTask mAsyncTask;
+    private String mUrlString;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mRecyclerView.setHasFixedSize(true);
-        setNewsList();
+
+        // downloading data from internet
+        mUrlString = "https://api.myjson.com/bins/2r8bl";
+        mAsyncTask = new DownloadNewsAsyncTask(this);
+        mAsyncTask.execute(mUrlString);
+
         // linear layout manager
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // setting adapter
-        mRecyclerAdapter = new CustomAdapter( mNewsList);
-
         // setting the item decoration
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.horizontal_divider);
-        if (drawable != null){
+        if (drawable != null) {
             mRecyclerView.addItemDecoration( new DividerItemDecoration(drawable));
         }
         else {
             Log.d(TAG, "onCreate: drawable is null");
         }
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+    }
+
+    @Override
+    public void addNewsList(ArrayList<News> newses) {
+        mNewsList = newses;
+        if(mNewsList != null) {
+            mRecyclerAdapter = new CustomAdapter( mNewsList);
+            mRecyclerView.setAdapter(mRecyclerAdapter);
+        }
+        else {
+            Log.d(TAG, "onCreate : news list is empty");
+        }
     }
 
     /**
      *  either fetch news feed from internet or default news feed
      */
-    private void setNewsList() {
-        final int mNewsCount = 5;
+   /* private void setNewsList() {
+        final int mNewsCount = 20;
         mNewsList = new ArrayList<>(mNewsCount);
         for (int i = 0; i < mNewsCount; i++ ) {
             News news = new News(i);
-            mNewsList.add( news);
+            mNewsList.add(news);
         }
-    }
+    }*/
 
 }
