@@ -1,6 +1,8 @@
 package com.bt.newsfeedapp;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -34,8 +36,7 @@ import java.util.ArrayList;
         if(mContext instanceof OnInteractToActivity)
         {
             mInteractionListener = (OnInteractToActivity) mContext;
-        }
-        else {
+        } else {
             throw new RuntimeException(mContext.toString()+" should Implement activity interact listener");
         }
     }
@@ -49,23 +50,37 @@ import java.util.ArrayList;
         URL newsURL;
         HttpURLConnection urlConnection = null;
         String mResult = "";
-        try {
-            newsURL = new URL(strings[0]);
-            urlConnection = (HttpURLConnection) newsURL.openConnection();
-            InputStream in = urlConnection.getInputStream();
-            mResult = readInputStream(in);
-
-        } catch (MalformedURLException ex) {
-            Log.e("httptest", Log.getStackTraceString(ex));
-        } catch (IOException io) {
-            Log.d(TAG, "doInBackground: io exception occurred");
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
+        NetworkInfo activeNetwork = null;
+        // checking for the connection
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        } else {
+            Log.d(TAG, "doInBackground: no connectivity manager");
         }
-        return readJsonInNewsArray(mResult);
+        if(activeNetwork != null && activeNetwork.isConnectedOrConnecting())
+        {
+            try {
+                newsURL = new URL(strings[0]);
+                urlConnection = (HttpURLConnection) newsURL.openConnection();
+                InputStream in = urlConnection.getInputStream();
+                mResult = readInputStream(in);
 
+            } catch (MalformedURLException ex) {
+                Log.e("httptest", Log.getStackTraceString(ex));
+            } catch (IOException io) {
+                Log.d(TAG, "doInBackground: io exception occurred");
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+            }
+            return readJsonInNewsArray(mResult);
+        } else {
+            Log.d(TAG, "doInBackground: There is no internet connection");
+            return null;
+        }
     }
 
     /**
