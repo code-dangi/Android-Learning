@@ -25,7 +25,7 @@
         android:id="@+id/place"
         android:layout_below="@id/title"
         android:layout_toRightOf="@id/date"
+        android:layout_toEndOf="@id/date"
         android:text="random place"
         android:background="@android:color/holo_orange_light"/>
-
 </RelativeLayout>

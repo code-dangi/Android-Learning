@@ -22,10 +22,10 @@ import java.util.ArrayList;
  * Custom class to get the news from internet in Json format using AsyncTask
  */
 
-    public class DownloadNewsAsyncTask extends AsyncTask<String, Void, ArrayList<News>> {
+    public class DownloadNewsAsyncTask extends AsyncTask<String, Void, ArrayList<News> > {
     private static final String TAG = DownloadNewsAsyncTask.class.getSimpleName();
     private Context mContext;
-    private OnInteractToActivity mInteractListener;
+    private OnInteractToActivity mInteractionListener;
 
     /**
      * to check if the calling activity has implemented the required interface or not
@@ -33,7 +33,7 @@ import java.util.ArrayList;
     protected void onPreExecute() {
         if(mContext instanceof OnInteractToActivity)
         {
-            mInteractListener = (OnInteractToActivity) mContext;
+            mInteractionListener = (OnInteractToActivity) mContext;
         }
         else {
             throw new RuntimeException(mContext.toString()+" should Implement activity interact listener");
@@ -79,7 +79,7 @@ import java.util.ArrayList;
         try {
             BufferedReader bReader = new BufferedReader(new InputStreamReader(in, "utf-8"), 8);
             StringBuilder sBuilder = new StringBuilder();
-            String line = null;
+            String line;
             while ((line = bReader.readLine()) != null) {
                 sBuilder.append(line);
             }
@@ -102,7 +102,7 @@ import java.util.ArrayList;
         try {
             JSONArray jArray = new JSONArray(result);
             Log.i(TAG, "readJsonInNewsArray:"+ result);
-            for(int i=0; i < jArray.length(); i++) {
+            for(int i = 0; i < jArray.length(); i++) {
                 JSONObject jObject = jArray.getJSONObject(i);
                 tempList.add(new News(jObject.getString("title"), jObject.getString("date"),
                         jObject.getString("place")));
@@ -116,11 +116,11 @@ import java.util.ArrayList;
     @Override
     protected void onPostExecute(ArrayList<News> newses) {
         super.onPostExecute(newses);
-        mInteractListener.addNewsList(newses);
+        mInteractionListener.addNewsTosList(newses);
     }
 
     // interface to interact with MainActivity
     public interface OnInteractToActivity {
-        void addNewsList(ArrayList<News> newses);
+        void addNewsTosList(ArrayList<News> newses);
     }
 }

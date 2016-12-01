@@ -13,51 +13,45 @@ import java.util.ArrayList;
 
 /**
  * Created by Monika on 11/28/2016.
- * It shows the list of news
+ * It shows the list of news downloaded from internet
  */
 
 public class MainActivity extends AppCompatActivity implements DownloadNewsAsyncTask.OnInteractToActivity {
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mRecyclerAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView mNewsRecyclerView;
     private static final String TAG = MainActivity.class.getSimpleName();
-    private ArrayList<News> mNewsList;
-    private DownloadNewsAsyncTask mAsyncTask;
-    private String mUrlString;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        String urlString;
+        DownloadNewsAsyncTask newsAsyncTask;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        mRecyclerView.setHasFixedSize(true);
+        mNewsRecyclerView = (RecyclerView) findViewById(R.id.recycler);
+        mNewsRecyclerView.setHasFixedSize(true);
 
         // downloading data from internet
-        mUrlString = "https://api.myjson.com/bins/2r8bl";
-        mAsyncTask = new DownloadNewsAsyncTask(this);
-        mAsyncTask.execute(mUrlString);
+        urlString = "https://api.myjson.com/bins/433e5";
+        newsAsyncTask = new DownloadNewsAsyncTask(this);
+        newsAsyncTask.execute(urlString);
 
         // linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // setting the item decoration
         Drawable drawable = ContextCompat.getDrawable(this, R.drawable.horizontal_divider);
         if (drawable != null) {
-            mRecyclerView.addItemDecoration( new DividerItemDecoration(drawable));
-        }
-        else {
+            mNewsRecyclerView.addItemDecoration(new DividerItemDecoration(drawable));
+        } else {
             Log.d(TAG, "onCreate: drawable is null");
         }
     }
 
     @Override
-    public void addNewsList(ArrayList<News> newses) {
-        mNewsList = newses;
-        if(mNewsList != null) {
-            mRecyclerAdapter = new CustomAdapter( mNewsList);
-            mRecyclerView.setAdapter(mRecyclerAdapter);
-        }
-        else {
+    public void addNewsTosList(ArrayList<News> newses) {
+        if(newses != null) {
+            mNewsRecyclerView.setAdapter(new NewsRecyclerAdapter(this, newses));
+        } else {
             Log.d(TAG, "onCreate : news list is empty");
         }
     }
