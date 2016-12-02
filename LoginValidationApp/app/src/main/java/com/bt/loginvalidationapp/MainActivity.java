@@ -65,8 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (ui.isEmpty()) {
                     mIsValidEmail = false;
                     mIsUiEmpty = true;
-                }
-                else {
+                } else {
                     mIsValidEmail = validateEmail(ui);
                 }
                 hideKeyBoard(mUiTextView);
@@ -110,8 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (emailMatcher.find()){
             Log.d(TAG, "validateEmail: Valid Email");
             return true;
-        }
-        else {
+        } else {
             Log.d(TAG, "validateEmail: Not valid Email");
             return false;
         }
@@ -125,8 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (passMatcher.find()){
             Log.d(TAG, "validatePass: valid password ");
             return true;
-        }
-        else {
+        } else {
             Log.d(TAG, "validatePass: invalid password ");
             return false;
         }
@@ -151,12 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .findFragmentByTag(getResources().getString(R.string.dialog_tag));
                 if(dialog != null){
                     dialog.setDialogText(dialog.getView(), getResources().getString(R.string.valid));
-                }
-                else {
+                } else {
                     Log.d(TAG, "onClick: returned dialog is null");
                 }
-            }
-            else {
+            } else {
                 Log.d(TAG, "onClick: email or pass is incorrect");
                 // show invalid dialog
                 ValidationDialog dialog = new ValidationDialog();
@@ -166,13 +161,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         findFragmentByTag(getResources().getString(R.string.dialog_tag));
                 if (dialog != null){
                     dialog.setDialogText(dialog.getView() ,getResources().getString(R.string.invalid));
-                }
-                else {
+                } else {
                     Log.d(TAG, "onClick: returned dialog is null");
                 }
             }
-        }
-        else {
+        } else {
             Log.d(TAG, "onClick: not valid pass or email");
         }
     }

@@ -1,10 +1,11 @@
-package com.bt.newsfeedapp;
+package com.bt.newsfeddappusinghandler;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,70 +20,67 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Monika on 11/30/2016.
- * Custom class to get the news from internet in Json format using AsyncTask
+ * Created by Monika on 12/2/2016.
+ * thread to download the news from Internet
  */
 
-    public class DownloadNewsAsyncTask extends AsyncTask<String, Void, ArrayList<News> > {
-    private static final String TAG = DownloadNewsAsyncTask.class.getSimpleName();
-    private Context mContext;
-    private OnInteractToActivity mInteractionListener;
+public class NewsDownloadThread implements Runnable {
+    private final String TAG = NewsDownloadThread.class.getSimpleName();
+    private final IDeliverResponse mCallBack;
+    private final Handler mHandler;
+    private String mNewsUrlString;
+    private Context mParentContext;
+    private String mResult;
 
-    /**
-     * to check if the calling activity has implemented the required interface or not
-     */
-    protected void onPreExecute() {
-        if(mContext instanceof OnInteractToActivity)
-        {
-            mInteractionListener = (OnInteractToActivity) mContext;
-        } else {
-            throw new RuntimeException(mContext.toString()+" should Implement activity interact listener");
-        }
-    }
 
-    public DownloadNewsAsyncTask(Context context) {
-        this.mContext = context;
+    public interface IDeliverResponse {
+        void setResponse(List<News> newsList);
     }
 
     @Override
-    protected ArrayList<News> doInBackground(String... strings) {
-        URL newsURL;
+    public void run() {
         HttpURLConnection urlConnection = null;
-        String mResult = "";
         NetworkInfo activeNetwork = null;
+        ArrayList<News> newsList;
+
+
         // checking for the connection
-        ConnectivityManager connectivityManager = (ConnectivityManager) mContext
+        ConnectivityManager connectivityManager = (ConnectivityManager) mParentContext
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             activeNetwork = connectivityManager.getActiveNetworkInfo();
         } else {
-            Log.d(TAG, "doInBackground: no connectivity manager");
+            Log.d(TAG, "run: no connectivity manager");
         }
         if(activeNetwork != null && activeNetwork.isConnectedOrConnecting())
         {
             try {
-                newsURL = new URL(strings[0]);
-                urlConnection = (HttpURLConnection) newsURL.openConnection();
+                urlConnection = (HttpURLConnection)  new URL(mNewsUrlString).openConnection();
                 InputStream in = urlConnection.getInputStream();
                 mResult = readInputStream(in);
 
             } catch (MalformedURLException ex) {
                 Log.e("httptest", Log.getStackTraceString(ex));
             } catch (IOException io) {
-                Log.d(TAG, "doInBackground: io exception occurred");
+                Log.d(TAG, "run: io exception occurred");
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
             }
-            return readJsonInNewsArray(mResult);
+            newsList = readJsonInNewsArray(mResult);
+            final Message msg = Message.obtain();
+            msg.obj = newsList;
+            mHandler.sendMessage(msg);
         } else {
             Log.d(TAG, "doInBackground: There is no internet connection");
-            return null;
+
         }
     }
+
 
     /**
      * To convert the input stream
@@ -129,14 +127,22 @@ import java.util.ArrayList;
         return tempList;
     }
 
-    @Override
-    protected void onPostExecute(ArrayList<News> newses) {
-        super.onPostExecute(newses);
-        mInteractionListener.addNewsTosList(newses);
-    }
 
-    // interface to interact with MainActivity
-    public interface OnInteractToActivity {
-        void addNewsTosList(ArrayList<News> newses);
+    /**
+     * Constructor
+     * @param parentContext get the context from launching activity
+     * @param url url to access news
+     */
+    NewsDownloadThread (Context parentContext, String url, IDeliverResponse callBack) {
+        mNewsUrlString = url;
+        mParentContext = parentContext;
+        mCallBack = callBack;
+        mHandler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                mCallBack.setResponse((ArrayList<News>) msg.obj);
+            }
+        };
     }
 }
