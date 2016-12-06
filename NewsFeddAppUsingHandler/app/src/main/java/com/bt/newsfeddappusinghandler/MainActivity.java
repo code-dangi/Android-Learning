@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements NewsDownloadThrea
         setContentView(activity_main);
         mNewsRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mNewsRecyclerView.setHasFixedSize(true);
-        // download data if internet connection is there
-        downloadNewsIfInternetConnection();
+        downloadNews();
+
         // linear layout manager
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNewsRecyclerView.addItemDecoration(new DividerItemDecoration());
@@ -50,31 +50,11 @@ public class MainActivity extends AppCompatActivity implements NewsDownloadThrea
         }
     }
     /**
-     * showing snackbar when there is no internet connection and keep checking internet
+     * showing snackBar when there is no internet connection and keep checking internet
      */
-    private void downloadNewsIfInternetConnection() {
-        mSnackbar = Snackbar
-                .make(mNewsRecyclerView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
-                .setAction("Re-try", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onClickReTry();
-                    }
-                });
+    private void downloadNews() {
         if (isConnectedToInternet()) {
-            mNewsDownloadThread = new NewsDownloadThread(IConstants.URL_STRING, this);
-            Thread thread = new Thread(mNewsDownloadThread);
-            thread.start();
-        } else {
-            mSnackbar.show();
-        }
-    }
-    /**
-     * onClick snack bar Re-try button
-     */
-    private void onClickReTry() {
-        if (isConnectedToInternet()) {
-            if (mSnackbar.isShown()) {
+            if (mSnackbar != null && mSnackbar.isShown()) {
                 mSnackbar.dismiss();
             }
             mNewsDownloadThread = new NewsDownloadThread(IConstants.URL_STRING, this);
@@ -86,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements NewsDownloadThrea
                     .setAction("Re-try", new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            onClickReTry();
+                            downloadNews();
                         }
                     });
             mSnackbar.show();

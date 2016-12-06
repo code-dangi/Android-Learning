@@ -1,5 +1,9 @@
 package com.bt.filedownloadapp;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,5 +27,18 @@ public class UtilityMethods {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    /**
+     *  Function to check internet connectivity
+     * @return true if internet connection is there else false
+     */
+    public static boolean isConnectedToInternet(Context context) {
+        NetworkInfo activeNetwork = null;
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        }
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting() ;
     }
 }

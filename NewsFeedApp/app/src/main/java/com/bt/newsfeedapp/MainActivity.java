@@ -3,11 +3,13 @@ package com.bt.newsfeedapp;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 
@@ -19,22 +21,14 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements DownloadNewsAsyncTask.OnInteractToActivity {
     private RecyclerView mNewsRecyclerView;
     private static final String TAG = MainActivity.class.getSimpleName();
-
+    private Snackbar mSnackbar;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        String urlString;
-        DownloadNewsAsyncTask newsAsyncTask;
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNewsRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mNewsRecyclerView.setHasFixedSize(true);
-
-        // downloading data from internet
-        urlString = "https://api.myjson.com/bins/433e5";
-        newsAsyncTask = new DownloadNewsAsyncTask(this);
-        newsAsyncTask.execute(urlString);
-
+        downloadNews();
         // linear layout manager
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -47,25 +41,38 @@ public class MainActivity extends AppCompatActivity implements DownloadNewsAsync
         }
     }
 
+    /**
+     * Method to start async task after checking the internet connection
+     */
+    private void downloadNews() {
+        DownloadNewsAsyncTask newsAsyncTask;
+        if (UtilityMethods.isConnectedToInternet(this)) {
+            if (mSnackbar != null && mSnackbar.isShown()) {
+                mSnackbar.dismiss();
+            }
+            newsAsyncTask = new DownloadNewsAsyncTask(this);
+            newsAsyncTask.execute(IConstants.URL_STRING);
+        } else {
+            mSnackbar = Snackbar
+                    .make(mNewsRecyclerView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Re-try", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            downloadNews();
+                        }
+                    });
+            mSnackbar.show();
+        }
+    }
+
     @Override
     public void addNewsTosList(ArrayList<News> newses) {
-        if(newses != null) {
+        if (newses != null) {
             mNewsRecyclerView.setAdapter(new NewsRecyclerAdapter(this, newses));
         } else {
             Log.d(TAG, "onCreate : news list is empty");
         }
     }
 
-    /**
-     *  either fetch news feed from internet or default news feed
-     */
-   /* private void setNewsList() {
-        final int mNewsCount = 20;
-        mNewsList = new ArrayList<>(mNewsCount);
-        for (int i = 0; i < mNewsCount; i++ ) {
-            News news = new News(i);
-            mNewsList.add(news);
-        }
-    }*/
 
 }

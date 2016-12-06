@@ -1,9 +1,6 @@
 package com.bt.filedownloadapp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -28,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        downloadImageIfInternetConnection();
+        downloadImage();
     }
     /**
      * to start intent service
@@ -40,56 +37,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startService(imageDownloadIntent);
     }
     /**
-     * showing snackbar when there is no internet connection and keep checking internet
+     * showing snackBar when there is no internet connection and keep checking internet
      */
-    private void downloadImageIfInternetConnection() {
-        mSnackbar = Snackbar
-                .make(mView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
-                .setAction("Re-try", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onClickReTry();
-                    }
-                });
-        if (isConnectedToInternet()) {
-            startFileDownload();
-        } else {
-            mSnackbar.show();
-        }
-    }
-    /**
-     * onClick snack bar Re-try button
-     */
-    private void onClickReTry() {
-        if (isConnectedToInternet()) {
-            if (mSnackbar.isShown()) {
+    private void downloadImage() {
+        if (UtilityMethods.isConnectedToInternet(this)) {
+            if (mSnackbar != null && mSnackbar.isShown()) {
                 mSnackbar.dismiss();
             }
             startFileDownload();
         } else {
             mSnackbar = Snackbar
                     .make(mView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Re-try", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            onClickReTry();
-                        }
-                    });
+                    .setAction("Re-try",this);
             mSnackbar.show();
         }
     }
-    /**
-     *  Function to check internet connectivity
-     * @return true if internet connection is there else false
-     */
-    private boolean isConnectedToInternet() {
-        NetworkInfo activeNetwork = null;
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            activeNetwork = connectivityManager.getActiveNetworkInfo();
-        }
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting() ;
-    }
+
 
 }
