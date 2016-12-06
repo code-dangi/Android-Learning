@@ -1,14 +1,21 @@
 package com.bt.newsfeddappusinghandler;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.bt.newsfeddappusinghandler.R.layout.activity_main;
 
 /**
  * Created by Monika on 11/28/2016.
@@ -18,23 +25,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NewsDownloadThread.IDeliverResponse {
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView mNewsRecyclerView;
-
+    private Snackbar mSnackbar;
+    private NewsDownloadThread mNewsDownloadThread;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        String urlString;
-
-        NewsDownloadThread newsDownloadThread;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(activity_main);
         mNewsRecyclerView = (RecyclerView) findViewById(R.id.recycler);
         mNewsRecyclerView.setHasFixedSize(true);
-
-        // downloading data from internet
-        urlString = "https://api.myjson.com/bins/433e5";
-        newsDownloadThread = new NewsDownloadThread(this, urlString, this);
-        Thread thread = new Thread(newsDownloadThread);
-        thread.start();
-
+        // download data if internet connection is there
+        downloadNewsIfInternetConnection();
         // linear layout manager
         mNewsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNewsRecyclerView.addItemDecoration(new DividerItemDecoration());
@@ -49,18 +49,68 @@ public class MainActivity extends AppCompatActivity implements NewsDownloadThrea
             Log.d(TAG, "onCreate: news list is not assigned well");
         }
     }
-
-
     /**
-     *  either fetch news feed from internet or default news feed
+     * showing snackbar when there is no internet connection and keep checking internet
      */
-   /* private void setNewsList() {
-        final int mNewsCount = 20;
-        mNewsList = new ArrayList<>(mNewsCount);
-        for (int i = 0; i < mNewsCount; i++ ) {
-            News news = new News(i);
-            mNewsList.add(news);
+    private void downloadNewsIfInternetConnection() {
+        mSnackbar = Snackbar
+                .make(mNewsRecyclerView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
+                .setAction("Re-try", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        onClickReTry();
+                    }
+                });
+        if (isConnectedToInternet()) {
+            mNewsDownloadThread = new NewsDownloadThread(IConstants.URL_STRING, this);
+            Thread thread = new Thread(mNewsDownloadThread);
+            thread.start();
+        } else {
+            mSnackbar.show();
         }
-    }*/
+    }
+    /**
+     * onClick snack bar Re-try button
+     */
+    private void onClickReTry() {
+        if (isConnectedToInternet()) {
+            if (mSnackbar.isShown()) {
+                mSnackbar.dismiss();
+            }
+            mNewsDownloadThread = new NewsDownloadThread(IConstants.URL_STRING, this);
+            Thread thread = new Thread(mNewsDownloadThread);
+            thread.start();
+        } else {
+            mSnackbar = Snackbar
+                    .make(mNewsRecyclerView, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Re-try", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            onClickReTry();
+                        }
+                    });
+            mSnackbar.show();
+        }
+    }
+    /**
+     *  Function to check internet connectivity
+     * @return true if internet connection is there else false
+     */
+    private boolean isConnectedToInternet() {
+        NetworkInfo activeNetwork = null;
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            activeNetwork = connectivityManager.getActiveNetworkInfo();
+        } else {
+            Log.d(TAG, "run: no connectivity manager");
+        }
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting() ;
+    }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

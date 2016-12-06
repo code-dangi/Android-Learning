@@ -29,7 +29,6 @@ class NewsRecyclerAdapter extends RecyclerView.Adapter {
             mDateTextView = (TextView) view.findViewById(R.id.date);
             mPlaceTextView = (TextView) view.findViewById(R.id.place);
         }
-
     }
 
     /**
