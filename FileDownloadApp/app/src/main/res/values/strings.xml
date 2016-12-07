@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">FileDownloadApp</string>
     <string name="button_text">Click to start downloading image</string>
-    <string name="EXTRA_URL">com.bt.filedownloadapp.url</string>
-    <string name="EXTRA_FILE_NAME">com.bt.filedownloadapp.fileName</string>
+    <string name="content_desc">Image to be downloaded</string>
 </resources>

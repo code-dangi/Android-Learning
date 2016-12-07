@@ -3,6 +3,7 @@ package com.bt.filedownloadapp;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,5 +41,17 @@ public class UtilityMethods {
             activeNetwork = connectivityManager.getActiveNetworkInfo();
         }
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting() ;
+    }
+
+    /**
+     * to check if external storage is available or not
+     */
+    public static boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 }
