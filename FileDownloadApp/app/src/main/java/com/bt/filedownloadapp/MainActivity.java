@@ -9,17 +9,10 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by Monika on 12/5/2016.
@@ -28,12 +21,10 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         DownloadStatusReceiver.IReceiver{
-    private final String TAG = MainActivity.class.getSimpleName();
     private Snackbar mSnackBar;
     private Button mButton;
     private ProgressBar mDownloadProgressBar;
     private Handler mHandler;
-    private Bitmap mDownloadedImage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,12 +83,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mDownloadProgressBar.setVisibility(View.GONE);
             mButton.setEnabled(true);
             byte[] imageByteArray = resultData.getByteArray("imageBitmapByteArray");
-            if (imageByteArray != null) {
-                Bitmap bmp = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
-                ((ImageView) findViewById(R.id.image1)).setImageBitmap(bmp);
-            }
+           loadImage(imageByteArray);
         }
     }
 
-
+    /**
+     * Method to load image from bitmap byte array by launching a thread and using handler
+     * @param bitmapByteArray input byte array
+     */
+    private void loadImage(final byte[] bitmapByteArray) {
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Bitmap bmp = (Bitmap) msg.obj;
+                ((ImageView) findViewById(R.id.image1)).setImageBitmap(bmp);
+            }
+        };
+        Thread loadingThread = new Thread() {
+            @Override
+            public void run() {
+                if (bitmapByteArray != null) {
+                    Message msg = Message.obtain();
+                    msg.obj = BitmapFactory.decodeByteArray(bitmapByteArray, 0, bitmapByteArray.length);
+                    mHandler.sendMessage(msg);
+                }
+            }
+        };
+        loadingThread.start();
+    }
 }
