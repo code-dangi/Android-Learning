@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mButton.setEnabled(false);
         Intent imageDownloadIntent = new Intent(this, ImageDownloadService.class);
         imageDownloadIntent.putExtra(IConstants.EXTRA_URL, IConstants.URL_STRING);
-        imageDownloadIntent.putExtra(IConstants.EXTRA_FILE_NAME, IConstants.FILE_NAME);
         DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(new Handler());
         statusReceiver.setReceiver(this);
         imageDownloadIntent.putExtra(IConstants.EXTRA_RECEIVER, statusReceiver);
@@ -82,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
             mButton.setEnabled(true);
-            byte[] imageByteArray = resultData.getByteArray("imageBitmapByteArray");
-           loadImage(imageByteArray);
+            byte[] imageByteArray = resultData.getByteArray(IConstants.BUNDLE_BYTE_ARRAY);
+            loadImage(imageByteArray);
         }
     }
 

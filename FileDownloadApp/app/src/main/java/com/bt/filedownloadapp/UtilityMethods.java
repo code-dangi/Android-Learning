@@ -6,11 +6,16 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,6 +25,7 @@ import java.io.OutputStream;
  * Utility Methods
  */
 public class UtilityMethods {
+    private static final String TAG = "UtilityMethods";
     /**
      * to copy input stream to output stream
      */
@@ -61,24 +67,74 @@ public class UtilityMethods {
         return false;
     }
     /**
-     * utility method to convert a file by filepath into bitmap using byte array
-     * @param path absolute path to file
-     * @return resulted bitmap
+     * function to convert input stream to bitmap and bitmap to byte array
      */
-    private Bitmap convertFileInputStreamToBitmapUsingByteArray(String path) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 2;
-        File image = new File(path);
-        byte[] buffer = new byte[(int)image.length()];
+    public static byte[] convertToByteArray(InputStream in) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bitmap bitmap = BitmapFactory.decodeStream(in);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+    /**
+     * utility method to save input stream into a file at external storage
+     */
+    public static String saveImage(String imageUrlString, InputStream in, int len) {
+        File fileDir = null;
+        File imageFile = null;
+        String fileName = null;
         try {
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(image));
-            inputStream.read(buffer, 0, (int)image.length());
-        } catch (FileNotFoundException e) {
+            fileName = imageUrlString.substring(imageUrlString.lastIndexOf("/") + 1);
+        } catch (NullPointerException e) {
             e.printStackTrace();
-        } catch (IOException ie) {
-            ie.printStackTrace();
         }
-        Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
-        return bitmap;
+        Log.i(TAG, "onHandleIntent: " + fileName);
+        if (UtilityMethods.isExternalStorageReadable()) {
+            String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            fileDir = new File(defaultLocation + IConstants.FILE_LOCATION);
+            if (fileDir.exists()) {
+                fileDir.delete();
+                return null;
+            }
+            if (fileDir.mkdirs()) {
+                Log.d(TAG, "saveImage: directory created at " + fileDir.getAbsolutePath());
+            } else {
+                Log.d(TAG, "saveImage: directory could not be created");
+                return null;
+            }
+            if (fileName != null) {
+                imageFile = new File(fileDir, fileName);
+                Log.d(TAG, "saveImage: file location " + imageFile.getAbsolutePath());
+            }
+
+            if (imageFile.exists()) {
+                imageFile.delete();
+            }
+
+        } else {
+            Log.d(TAG, "saveImage: check read and write permissions again");
+            return null;
+        }
+        DataInputStream dataInputStream = new DataInputStream(in);
+        byte[] buffer = new byte[len];
+        try {
+            dataInputStream.readFully(buffer);
+            dataInputStream.close();
+            if (buffer.length > 0) {
+                DataOutputStream out;
+                FileOutputStream fos = new FileOutputStream(imageFile);
+                out = new DataOutputStream(fos);
+                out.write(buffer);
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageFile.getAbsolutePath();
+        /*need to add some code into the service to make it work, create new urlconnection
+        * int length = connection.getContentLength();
+        * connection = (HttpURLConnection) imageUrl.openConnection();
+        * and call this function only setting the file paths like:
+        * */
     }
 }
