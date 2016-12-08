@@ -44,7 +44,7 @@ public class ImageDownloadService extends IntentService {
         try {
             URL imageUrl = new URL(imageUrlString);
             HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-
+            int length = connection.getContentLength();
             Log.d(TAG, "onHandleIntent: response code from the request "+ connection.getResponseCode());
             if (connection.getResponseCode() != IConstants.REQUEST_OK) {
                 final Handler handler = new Handler(Looper.getMainLooper());
@@ -58,7 +58,8 @@ public class ImageDownloadService extends IntentService {
                 });            }
             InputStream in = connection.getInputStream();
             Bundle bundle = new Bundle();
-            bundle.putByteArray(IConstants.BUNDLE_BYTE_ARRAY, UtilityMethods.convertToByteArray(in));
+            /*bundle.putByteArray(IConstants.BUNDLE_BYTE_ARRAY, UtilityMethods.convertToByteArray(in));*/
+            bundle.putString(IConstants.BUNDLE_PATH, UtilityMethods.saveImage(imageUrlString, in, length));
             in.close();
             resultReceiver.send(IConstants.FINISH_DOWNLOAD, bundle);
             final Handler handler = new Handler(Looper.getMainLooper());

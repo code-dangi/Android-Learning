@@ -87,20 +87,14 @@ public class UtilityMethods {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "onHandleIntent: " + fileName);
+        Log.i(TAG, "saveImage: " + fileName);
         if (UtilityMethods.isExternalStorageReadable()) {
-            String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+            String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
             fileDir = new File(defaultLocation + IConstants.FILE_LOCATION);
             if (fileDir.exists()) {
                 fileDir.delete();
-                return null;
             }
-            if (fileDir.mkdirs()) {
-                Log.d(TAG, "saveImage: directory created at " + fileDir.getAbsolutePath());
-            } else {
-                Log.d(TAG, "saveImage: directory could not be created");
-                return null;
-            }
+            fileDir.mkdirs();
             if (fileName != null) {
                 imageFile = new File(fileDir, fileName);
                 Log.d(TAG, "saveImage: file location " + imageFile.getAbsolutePath());

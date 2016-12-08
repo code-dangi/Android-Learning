@@ -9,6 +9,7 @@ public interface IConstants {
     int REQUEST_OK = 200;
     String EXTRA_URL = "com.bt.filedownloadapp.url";
     String BUNDLE_BYTE_ARRAY = "bundl_put_byte_array";
+    String BUNDLE_PATH = "external_storage_image_path";
     String EXTRA_RECEIVER = "com.bt.filedownloadapp";
     String TOAST_MESSAGE = "Download Success";
     String DOWNLOADED_IMAGE_PATH = "absolute_path_for_downloaded_immage";

@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import java.io.File;
+
 /**
  * Created by Monika on 12/5/2016.
  * Launching Activity
@@ -81,8 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
             mButton.setEnabled(true);
-            byte[] imageByteArray = resultData.getByteArray(IConstants.BUNDLE_BYTE_ARRAY);
-            loadImage(imageByteArray);
+            /*byte[] imageByteArray = resultData.getByteArray(IConstants.BUNDLE_BYTE_ARRAY);
+            loadImageFromByteArray(imageByteArray);*/
+            loadImageFromPath(resultData.getString(IConstants.BUNDLE_PATH));
         }
     }
 
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Method to load image from bitmap byte array by launching a thread and using handler
      * @param bitmapByteArray input byte array
      */
-    private void loadImage(final byte[] bitmapByteArray) {
+    private void loadImageFromByteArray(final byte[] bitmapByteArray) {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -108,6 +111,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
+        loadingThread.start();
+    }
+    private void loadImageFromPath(final String path) {
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Bitmap bmp = (Bitmap) msg.obj;
+                ((ImageView) findViewById(R.id.image1)).setImageBitmap(bmp);
+            }
+        };
+        Thread loadingThread = new Thread() {
+            @Override
+            public void run() {
+                    Message msg = Message.obtain();
+                    msg.obj = BitmapFactory.decodeFile(path);
+                    mHandler.sendMessage(msg);
+                }
+            };
         loadingThread.start();
     }
 }
