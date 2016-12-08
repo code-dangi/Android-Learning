@@ -14,8 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import java.io.File;
-
 /**
  * Created by Monika on 12/5/2016.
  * Launching Activity
@@ -23,17 +21,17 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         DownloadStatusReceiver.IReceiver{
-    private Snackbar mSnackBar;
-    private Button mButton;
+    private Snackbar mInternetNotificationBar;
+    private Button mDownloadButton;
     private ProgressBar mDownloadProgressBar;
-    private Handler mHandler;
+    private Handler mHandlerToLoadImage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mButton = (Button) findViewById(R.id.button_download);
-        mButton.setOnClickListener(this);
+        mDownloadButton = (Button) findViewById(R.id.button_download);
+        mDownloadButton.setOnClickListener(this);
     }
 
     @Override
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * to start intent service
      */
     private void startImageDownload() {
-        mButton.setEnabled(false);
+        mDownloadButton.setEnabled(false);
         Intent imageDownloadIntent = new Intent(this, ImageDownloadService.class);
         imageDownloadIntent.putExtra(IConstants.EXTRA_URL, IConstants.URL_STRING);
         DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(new Handler());
@@ -60,15 +58,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void downloadImage() {
         if (UtilityMethods.isConnectedToInternet(this)) {
-            if (mSnackBar != null && mSnackBar.isShown()) {
-                mSnackBar.dismiss();
+            if (mInternetNotificationBar != null && mInternetNotificationBar.isShown()) {
+                mInternetNotificationBar.dismiss();
             }
             startImageDownload();
         } else {
-            mSnackBar = Snackbar
-                    .make(mButton, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(IConstants.RE_TRY,this);
-            mSnackBar.show();
+            mInternetNotificationBar = Snackbar
+                    .make(mDownloadButton, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(IConstants.RE_TRY, this);
+            mInternetNotificationBar.show();
         }
     }
 
@@ -79,22 +77,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onReceiveFinish(int resultCode, Bundle resultData) {
-        if (resultCode == IConstants.FINISH_DOWNLOAD) {
-            mDownloadProgressBar.setIndeterminate(false);
-            mDownloadProgressBar.setVisibility(View.GONE);
-            mButton.setEnabled(true);
+        mDownloadProgressBar.setIndeterminate(false);
+        mDownloadProgressBar.setVisibility(View.GONE);
+        mDownloadButton.setEnabled(true);
+        if (resultCode == IConstants.DOWNLOAD_FINISH) {
+            loadImageFromPath(resultData.getString(IConstants.BUNDLE_PATH));
             /*byte[] imageByteArray = resultData.getByteArray(IConstants.BUNDLE_BYTE_ARRAY);
             loadImageFromByteArray(imageByteArray);*/
-            loadImageFromPath(resultData.getString(IConstants.BUNDLE_PATH));
         }
     }
 
+    private void loadImageFromPath(final String imagePath) {
+        mHandlerToLoadImage = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                ((ImageView) findViewById(R.id.image1)).setImageBitmap((Bitmap) msg.obj);
+            }
+        };
+        Thread loadingThread = new Thread() {
+            @Override
+            public void run() {
+                    Message msg = Message.obtain();
+                    msg.obj = BitmapFactory.decodeFile(imagePath);
+                    mHandlerToLoadImage.sendMessage(msg);
+                }
+            };
+        loadingThread.start();
+    }
     /**
      * Method to load image from bitmap byte array by launching a thread and using handler
      * @param bitmapByteArray input byte array
      */
     private void loadImageFromByteArray(final byte[] bitmapByteArray) {
-        mHandler = new Handler() {
+        mHandlerToLoadImage = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 Bitmap bmp = (Bitmap) msg.obj;
@@ -107,28 +122,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (bitmapByteArray != null) {
                     Message msg = Message.obtain();
                     msg.obj = BitmapFactory.decodeByteArray(bitmapByteArray, 0, bitmapByteArray.length);
-                    mHandler.sendMessage(msg);
+                    mHandlerToLoadImage.sendMessage(msg);
                 }
             }
         };
-        loadingThread.start();
-    }
-    private void loadImageFromPath(final String path) {
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                Bitmap bmp = (Bitmap) msg.obj;
-                ((ImageView) findViewById(R.id.image1)).setImageBitmap(bmp);
-            }
-        };
-        Thread loadingThread = new Thread() {
-            @Override
-            public void run() {
-                    Message msg = Message.obtain();
-                    msg.obj = BitmapFactory.decodeFile(path);
-                    mHandler.sendMessage(msg);
-                }
-            };
         loadingThread.start();
     }
 }
