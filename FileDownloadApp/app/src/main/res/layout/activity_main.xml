@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/image"
+        android:id="@+id/image1"
         android:contentDescription="@string/content_desc"
         android:src="@mipmap/ic_launcher"/>
 </RelativeLayout>

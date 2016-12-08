@@ -1,10 +1,16 @@
 package com.bt.filedownloadapp;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,5 +59,26 @@ public class UtilityMethods {
             return true;
         }
         return false;
+    }
+    /**
+     * utility method to convert a file by filepath into bitmap using byte array
+     * @param path absolute path to file
+     * @return resulted bitmap
+     */
+    private Bitmap convertFileInputStreamToBitmapUsingByteArray(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 2;
+        File image = new File(path);
+        byte[] buffer = new byte[(int)image.length()];
+        try {
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(image));
+            inputStream.read(buffer, 0, (int)image.length());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException ie) {
+            ie.printStackTrace();
+        }
+        Bitmap bitmap = BitmapFactory.decodeByteArray(buffer, 0, buffer.length, options);
+        return bitmap;
     }
 }

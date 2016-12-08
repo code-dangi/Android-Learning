@@ -2,6 +2,8 @@ package com.bt.filedownloadapp;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -10,8 +12,8 @@ import android.os.ResultReceiver;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -48,9 +50,7 @@ public class ImageDownloadService extends IntentService {
             if (fileDir.exists()) {
                 fileDir.delete();
             }
-            if (!fileDir.mkdirs()) {
-                Log.d(TAG, "onHandleIntent: Directory not created");
-            }
+            fileDir.mkdirs();
             imageFile = new File(fileDir, fileName);
             if (imageFile.exists()) {
                 imageFile.delete();
@@ -62,18 +62,26 @@ public class ImageDownloadService extends IntentService {
         try {
             URL imageUrl = new URL(imageUrlString);
             HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+            Log.d(TAG, "onHandleIntent: response code from the request "+ connection.getResponseCode());
             if (connection.getResponseCode() != IConstants.REQUEST_OK) {
-                throw new RuntimeException("Request for image download was not successful");
-            }
+                final Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast noInternetNotification = Toast.makeText(getApplicationContext(),
+                                IConstants.TOAST_MESSAGE, Toast.LENGTH_SHORT);
+                        noInternetNotification.show();
+                    }
+                });            }
             InputStream in = connection.getInputStream();
-            FileOutputStream out = new FileOutputStream(imageFile);
-            UtilityMethods.copyStreams(in, out);
+            Bitmap bitmap = BitmapFactory.decodeStream(in);
             Bundle bundle = new Bundle();
-            bundle.putString(IConstants.DOWNLOADED_IMAGE, out.toString());
-            out.flush();
-            out.close();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+            bundle.putByteArray("imageBitmapByteArray", byteArray);
             in.close();
-            resultReceiver.send(IConstants.PROGRESS_FINISH, bundle);
+            resultReceiver.send(IConstants.FINISH_DOWNLOAD, bundle);
             final Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
