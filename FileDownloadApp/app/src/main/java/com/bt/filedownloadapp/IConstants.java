@@ -5,6 +5,8 @@ public interface IConstants {
     String URL_STRING_9_PATCH = "http://www.queness.com/resources/images/png/apple_ex.png";
     String URL_STRING_PDF = "http://www.pdf995.com/samples/pdf.pdf";
     String SNACKBAR_TEXT = "No internet connection";
+    String PREFERENCE_NAME = "downloadedFiles";
+    String FILE_NOT_FOUND = "notPresent";
     String FILE_LOCATION = "/savedImages";
     String EXTRA_URL = "com.bt.filedownloadapp.url";
     String BUNDLE_PATH = "external_storage_image_path";
@@ -12,8 +14,7 @@ public interface IConstants {
     String SUCCESS_MESSAGE = "Successfully Downloaded";
     String ERROR_MESSAGE = "Something went wrong check your internet connection";
     String RE_TRY = "Re-Try";
-    int DOWNLOAD_FINISH = 100;
-    int REQUEST_OK = 200;
-    int DOWNLOAD_ERROR = 300;
-    String BUNDLE_BYTE_ARRAY = "bundl_put_byte_array";
+    int CODE_DOWNLOAD_FINISH = 100;
+    int REQUEST_OK_CODE = 200;
+    int DOWNLOAD_ERROR_CODE = 300;
 }

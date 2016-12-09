@@ -53,6 +53,14 @@ public class UtilityMethods {
     }
 
     /**
+     * return the file extension example pdf or jpg
+     * @param fileName : the name of file example image.png
+     * @return file extension
+     */
+    public static String getFileExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".")+1);
+    }
+    /**
      * to check if external storage is available or not
      */
     public static boolean isExternalStorageReadable() {
@@ -82,7 +90,7 @@ public class UtilityMethods {
         String fileExtension = null;
         try {
             fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
-            fileExtension = fileUrlString.substring(fileUrlString.lastIndexOf(".")+1);
+            fileExtension = UtilityMethods.getFileExtension(fileName);
             Log.d(TAG, "saveFile: file extension is "+fileExtension);
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -92,18 +100,22 @@ public class UtilityMethods {
             String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
             fileDir = new File(defaultLocation + IConstants.FILE_LOCATION);
             if (fileDir.exists()) {
-                fileDir.delete();
+                Log.d(TAG, "saveFile: file directory already exists");
+            } else {
+                if (fileDir.mkdir()) {
+                    Log.d(TAG, "saveFile: successfully created file dir");
+                } else {
+                    Log.d(TAG, "saveFile: something went wrong file dir could not be created");
+                    return null;
+                }
             }
-            fileDir.mkdirs();
             if (fileName != null) {
                 imageFile = new File(fileDir, fileName);
                 Log.d(TAG, "saveFile: file location " + imageFile.getAbsolutePath());
             }
-
             if (imageFile.exists()) {
-                imageFile.delete();
+                return imageFile.getAbsolutePath();
             }
-
         } else {
             Log.d(TAG, "saveFile: check read and write permissions again");
             return null;

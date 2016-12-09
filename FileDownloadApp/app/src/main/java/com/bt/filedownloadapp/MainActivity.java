@@ -1,6 +1,7 @@
 package com.bt.filedownloadapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         DownloadStatusReceiver.IReceiver, RadioGroup.OnCheckedChangeListener {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private SharedPreferences mDownloadedFiles;
     private Snackbar mInternetNotificationBar;
     private ProgressBar mDownloadProgressBar;
     private Handler mImageHandler;
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDownloadedFiles = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE);
+        /*clearDownloadedFiles(mDownloadedFiles);*/
         mTypeSelectionGroup = (RadioGroup) findViewById(R.id.radio_grp);
         mDownloadedImage = (ImageView) findViewById(R.id.image1);
         mTypeSelectionGroup.setOnCheckedChangeListener(this);
@@ -64,20 +68,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 Log.d(TAG, "onRadioButtonClick: there is no selection");
         }
-        mDownloadedImage.setVisibility(View.GONE);
-        mPdfTextView.setVisibility(View.GONE);
-        downloadImage(mUrlString);
+       downloadIfNotExist(mUrlString);
     }
 
     @Override
     public void onClick(View view) {
-            downloadImage(mUrlString);
+            downloadFile(mUrlString);
+    }
+    /**
+     * clear the cache from shared preferences
+     */
+    private void clearDownloadedFiles(SharedPreferences preferences) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+    /**
+     * download file if its not exist in preferences
+     */
+    private void downloadIfNotExist(String url) {
+        String filePath = getFilePath(url);
+        if (filePath.equals(IConstants.FILE_NOT_FOUND)) {
+            mDownloadedImage.setVisibility(View.GONE);
+            mPdfTextView.setVisibility(View.GONE);
+            downloadFile(mUrlString);
+        } else {
+            String fileExtension = UtilityMethods.getFileExtension(filePath);
+            if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+                readImage(filePath);
+            } else {
+                readFile(filePath);
+            }
+        }
+    }
+    /**
+     * read image from the given path
+     */
+    private void readImage(String imagePath) {
+        mPdfTextView.setVisibility(View.GONE);
+        loadImageFromPath(imagePath);
+        mDownloadedImage.setVisibility(View.VISIBLE);
+    }
+    /**
+     * read file other than image
+     */
+    private void readFile(String filePath) {
+        mDownloadedImage.setVisibility(View.GONE);
+        mPdfTextView.setVisibility(View.VISIBLE);
+        mPdfTextView.setText(filePath);
     }
     /**
      * to start intent service
      */
-    private void startImageDownload(String urlString) {
-
+    private void startFileDownload(String urlString) {
         Intent imageDownloadIntent = new Intent(this, ImageDownloadService.class);
         imageDownloadIntent.putExtra(IConstants.EXTRA_URL, urlString);
         DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(new Handler());
@@ -90,12 +133,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * showing snackBar when there is no internet connection and keep checking internet
      */
-    private void downloadImage(String urlString) {
+    private void downloadFile(String urlString) {
         if (UtilityMethods.isConnectedToInternet(this)) {
             if (mInternetNotificationBar != null && mInternetNotificationBar.isShown()) {
                 mInternetNotificationBar.dismiss();
             }
-            startImageDownload(urlString);
+            startFileDownload(urlString);
         } else {
             mInternetNotificationBar = Snackbar
                     .make(mTypeSelectionGroup, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
@@ -105,6 +148,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * check if file is present in preferences
+     * @param url: url is key
+     * @return file path if url is present or file not found if url is not present
+     */
+    private String getFilePath(String url) {
+        return mDownloadedFiles.getString(url, IConstants.FILE_NOT_FOUND);
+    }
+    /**
      * Method called by result receiver after completion of download
      * @param resultCode the status of download
      * @param resultData bundle containing byte array of bitmap
@@ -113,22 +164,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onFinishDownload(int resultCode, Bundle resultData) {
         String fileExtension = null;
         String filePath = null;
-        if (resultCode == IConstants.DOWNLOAD_FINISH) {
+        if (resultCode == IConstants.CODE_DOWNLOAD_FINISH) {
             filePath = resultData.getString(IConstants.BUNDLE_PATH);
-            fileExtension = filePath.substring(filePath.lastIndexOf(".")+1);
+            fileExtension = UtilityMethods.getFileExtension(filePath);
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
             if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
-                mPdfTextView.setVisibility(View.GONE);
-                loadImageFromPath(filePath);
-                mDownloadedImage.setVisibility(View.VISIBLE);
+                readImage(filePath);
             } else {
-                mDownloadedImage.setVisibility(View.GONE);
-                mPdfTextView.setVisibility(View.VISIBLE);
-                mPdfTextView.setText(filePath);
+                readFile(filePath);
             }
-            /*byte[] imageByteArray = resultData.getByteArray(IConstants.BUNDLE_BYTE_ARRAY);
-            loadImageFromByteArray(imageByteArray);*/
         } else {
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
@@ -138,7 +183,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void loadImageFromPath(final String imagePath) {
+
         mImageHandler = new Handler() {
+            int checkId;
             @Override
             public void handleMessage(Message msg) {
                 mDownloadedImage.setImageBitmap((Bitmap) msg.obj);

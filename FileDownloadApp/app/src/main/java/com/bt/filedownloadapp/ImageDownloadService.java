@@ -2,6 +2,7 @@ package com.bt.filedownloadapp;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -33,44 +34,48 @@ public class ImageDownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String fileUrlString = intent.getExtras().getString(IConstants.EXTRA_URL);
+        String downloadedFilePath = null;
         final ResultReceiver downloadResultReceiver = intent.getParcelableExtra(IConstants.EXTRA_RECEIVER);
         try {
-            URL imageUrl = new URL(fileUrlString);
-            HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+            URL fileUrl = new URL(fileUrlString);
+            HttpURLConnection connection = (HttpURLConnection) fileUrl.openConnection();
             int length = connection.getContentLength();
             Log.d(TAG, "onHandleIntent: response code from the request "+ connection.getResponseCode());
-            if (connection.getResponseCode() != IConstants.REQUEST_OK) {
-                final Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast noInternetNotification = Toast.makeText(getApplicationContext(),
-                                IConstants.ERROR_MESSAGE, Toast.LENGTH_SHORT);
-                        noInternetNotification.show();
-                    }
-                });
-                downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR, null);
+            if (connection.getResponseCode() != IConstants.REQUEST_OK_CODE) {
+                showToastNotification(IConstants.ERROR_MESSAGE);
+                downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR_CODE, null);
             } else {
                 InputStream in = connection.getInputStream();
                 Bundle bundle = new Bundle();
-               /* bundle.putByteArray(IConstants.BUNDLE_BYTE_ARRAY, UtilityMethods.convertToByteArray(in));*/
-                bundle.putString(IConstants.BUNDLE_PATH, UtilityMethods.saveFile(fileUrlString, in, length));
+                downloadedFilePath = UtilityMethods.saveFile(fileUrlString, in, length);
                 in.close();
-                downloadResultReceiver.send(IConstants.DOWNLOAD_FINISH, bundle);
-                final Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast successDownloadNotification = Toast.makeText(getApplicationContext(),
-                                IConstants.SUCCESS_MESSAGE, Toast.LENGTH_SHORT);
-                        successDownloadNotification.show();
-                    }
-                });
+                if (downloadedFilePath == null) {
+                    showToastNotification(IConstants.ERROR_MESSAGE);
+                    downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR_CODE, null);
+                } else {
+                    bundle.putString(IConstants.BUNDLE_PATH, downloadedFilePath);
+                    SharedPreferences.Editor editor = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE).edit();
+                    editor.putString(fileUrlString, downloadedFilePath);
+                    editor.commit();
+                    downloadResultReceiver.send(IConstants.CODE_DOWNLOAD_FINISH, bundle);
+                    showToastNotification(IConstants.SUCCESS_MESSAGE);
+                }
             }
         } catch (MalformedURLException me) {
             me.printStackTrace();
         } catch (IOException ie) {
             ie.printStackTrace();
         }
+    }
+    private void showToastNotification(final String message) {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast successDownloadNotification = Toast.makeText(getApplicationContext(),
+                        message, Toast.LENGTH_SHORT);
+                successDownloadNotification.show();
+            }
+        });
     }
 }
