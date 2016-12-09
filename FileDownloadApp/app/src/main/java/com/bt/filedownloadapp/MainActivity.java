@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDownloadProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPdfTextView = (TextView) findViewById(R.id.pdf_text_view);
         findViewById(R.id.delete_pref_button).setOnClickListener(this);
+        setHandler();
     }
 
     @Override
@@ -126,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void startFileDownload(String urlString) {
         Intent imageDownloadIntent = new Intent(this, ImageDownloadService.class);
         imageDownloadIntent.putExtra(IConstants.EXTRA_URL, urlString);
-        DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(new Handler());
+        DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(mImageHandler);
         statusReceiver.setReceiver(this);
         imageDownloadIntent.putExtra(IConstants.EXTRA_RECEIVER, statusReceiver);
         mDownloadProgressBar.setIndeterminate(true);
@@ -177,33 +179,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 readFile(filePath);
             }
+            showNotification(IConstants.SUCCESS_MESSAGE);
         } else {
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
-            Toast downloadError = Toast.makeText(this, IConstants.ERROR_MESSAGE, Toast.LENGTH_SHORT);
-            downloadError.show();
+            showNotification(IConstants.ERROR_MESSAGE);
         }
     }
 
-    private void loadImageFromPath(final String imagePath) {
-
-        mImageHandler = new Handler() {
-            int checkId;
+    /**
+     * set handler for ui thread
+     */
+    private void setHandler() {
+        mImageHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
                 mDownloadedImage.setVisibility(View.VISIBLE);
             }
         };
-        Thread loadingThread = new Thread() {
-            @Override
-            public void run() {
-                Message msg = Message.obtain();
-                msg.obj = BitmapFactory.decodeFile(imagePath);
-                mImageHandler.sendMessage(msg);
-            }
-        };
-        loadingThread.start();
+    }
+
+    /**
+     * load image from given image path
+     * @param imagePath external storage path of the image
+     */
+    private void loadImageFromPath(final String imagePath) {
+        ImageReadThread imageReadThread = new ImageReadThread();
+        imageReadThread.setImagePath(imagePath);
+        imageReadThread.setHandler(mImageHandler);
+        imageReadThread.start();
+    }
+    /**
+     * show the notifications on the bottom as toast message
+     */
+    private void showNotification(String message) {
+        Toast notificationToast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        notificationToast.show();
     }
     /**
      * Method to load image from bitmap byte array by launching a thread and using handler

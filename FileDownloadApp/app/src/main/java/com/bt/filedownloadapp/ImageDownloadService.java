@@ -50,7 +50,6 @@ public class ImageDownloadService extends IntentService {
                 downloadedFilePath = UtilityMethods.saveFile(fileUrlString, in, length);
                 in.close();
                 if (downloadedFilePath == null) {
-                    showToastNotification(IConstants.ERROR_MESSAGE);
                     downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR_CODE, null);
                 } else {
                     bundle.putString(IConstants.BUNDLE_PATH, downloadedFilePath);
@@ -58,7 +57,6 @@ public class ImageDownloadService extends IntentService {
                     editor.putString(fileUrlString, downloadedFilePath);
                     editor.commit();
                     downloadResultReceiver.send(IConstants.CODE_DOWNLOAD_FINISH, bundle);
-                    showToastNotification(IConstants.SUCCESS_MESSAGE);
                 }
             }
         } catch (MalformedURLException me) {
