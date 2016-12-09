@@ -3,19 +3,28 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/selection_text"
-        android:id="@+id/selection"
+        android:id="@+id/selection_text_view"
         android:textSize="@dimen/text_view_size"
         android:textColor="@android:color/holo_red_dark"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignRight="@id/selection_text_view"
+        android:layout_alignParentRight="true"
+        android:id="@+id/delete_pref_button"
+        android:text="@string/delete_pref_text"
+        android:background="@android:color/holo_red_light"
+        android:textSize="@dimen/button_text_size" />
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/radio_grp"
         android:layout_marginTop="@dimen/top_margin"
-        android:layout_below="@id/selection">
+        android:layout_below="@id/selection_text_view">
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

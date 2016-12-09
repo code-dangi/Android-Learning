@@ -40,12 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDownloadedFiles = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE);
-        /*clearDownloadedFiles(mDownloadedFiles);*/
         mTypeSelectionGroup = (RadioGroup) findViewById(R.id.radio_grp);
         mDownloadedImage = (ImageView) findViewById(R.id.image1);
         mTypeSelectionGroup.setOnCheckedChangeListener(this);
         mDownloadProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPdfTextView = (TextView) findViewById(R.id.pdf_text_view);
+        findViewById(R.id.delete_pref_button).setOnClickListener(this);
     }
 
     @Override
@@ -73,7 +73,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-            downloadFile(mUrlString);
+       if (view.getId() == R.id.delete_pref_button) {
+           clearDownloadedFiles(mDownloadedFiles);
+       } else {
+           downloadFile(mUrlString);
+       }
     }
     /**
      * clear the cache from shared preferences
@@ -107,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void readImage(String imagePath) {
         mPdfTextView.setVisibility(View.GONE);
         loadImageFromPath(imagePath);
-        mDownloadedImage.setVisibility(View.VISIBLE);
     }
     /**
      * read file other than image
@@ -189,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void handleMessage(Message msg) {
                 mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
+                mDownloadedImage.setVisibility(View.VISIBLE);
             }
         };
         Thread loadingThread = new Thread() {
