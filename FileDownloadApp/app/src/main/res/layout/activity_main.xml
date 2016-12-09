@@ -2,22 +2,63 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="@string/button_text"
-        android:id="@+id/button_download"/>
+        android:text="@string/selection_text"
+        android:id="@+id/selection"
+        android:textSize="@dimen/text_view_size"
+        android:textColor="@android:color/holo_red_dark"/>
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/radio_grp"
+        android:layout_marginTop="@dimen/top_margin"
+        android:layout_below="@id/selection">
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_jpg"
+            android:text="@string/jpg"
+            android:textColor="@android:color/holo_green_light"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_png"
+            android:text="@string/png"
+            android:textColor="@android:color/holo_green_light"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_patch"
+            android:text="@string/nine_patch"
+            android:textColor="@android:color/holo_green_light"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_pdf"
+            android:text="@string/pdf"
+            android:textColor="@android:color/holo_green_light"/>
+    </RadioGroup>
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_centerInParent="true"
         android:id="@+id/progress_bar"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:id="@+id/pdf_text_view"/>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-       android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/top_margin"
         android:id="@+id/image1"
+        android:layout_centerVertical="true"
+        android:layout_below="@id/radio_grp"
         android:contentDescription="@string/content_desc"/>
 </RelativeLayout>

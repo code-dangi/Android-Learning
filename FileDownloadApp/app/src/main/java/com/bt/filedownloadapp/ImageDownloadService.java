@@ -32,10 +32,10 @@ public class ImageDownloadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String imageUrlString = intent.getExtras().getString(IConstants.EXTRA_URL);
-        final ResultReceiver resultReceiver = intent.getParcelableExtra(IConstants.EXTRA_RECEIVER);
+        String fileUrlString = intent.getExtras().getString(IConstants.EXTRA_URL);
+        final ResultReceiver downloadResultReceiver = intent.getParcelableExtra(IConstants.EXTRA_RECEIVER);
         try {
-            URL imageUrl = new URL(imageUrlString);
+            URL imageUrl = new URL(fileUrlString);
             HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
             int length = connection.getContentLength();
             Log.d(TAG, "onHandleIntent: response code from the request "+ connection.getResponseCode());
@@ -49,14 +49,14 @@ public class ImageDownloadService extends IntentService {
                         noInternetNotification.show();
                     }
                 });
-                resultReceiver.send(IConstants.DOWNLOAD_ERROR, null);
+                downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR, null);
             } else {
                 InputStream in = connection.getInputStream();
                 Bundle bundle = new Bundle();
                /* bundle.putByteArray(IConstants.BUNDLE_BYTE_ARRAY, UtilityMethods.convertToByteArray(in));*/
-                bundle.putString(IConstants.BUNDLE_PATH, UtilityMethods.saveImage(imageUrlString, in, length));
+                bundle.putString(IConstants.BUNDLE_PATH, UtilityMethods.saveFile(fileUrlString, in, length));
                 in.close();
-                resultReceiver.send(IConstants.DOWNLOAD_FINISH, bundle);
+                downloadResultReceiver.send(IConstants.DOWNLOAD_FINISH, bundle);
                 final Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override

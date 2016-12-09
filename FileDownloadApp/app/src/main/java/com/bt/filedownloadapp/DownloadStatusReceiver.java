@@ -21,10 +21,10 @@ public class DownloadStatusReceiver extends ResultReceiver {
     @Override
     protected void onReceiveResult(int resultCode, Bundle resultData) {
         if (mIReceiver != null) {
-            mIReceiver.onReceiveFinish(resultCode, resultData);
+            mIReceiver.onFinishDownload(resultCode, resultData);
         }
     }
     public interface IReceiver {
-        void onReceiveFinish(int resultCode, Bundle resultData);
+        void onFinishDownload(int resultCode, Bundle resultData);
     }
 }

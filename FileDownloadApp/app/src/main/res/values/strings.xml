@@ -1,5 +1,11 @@
 <resources>
     <string name="app_name">FileDownloadApp</string>
-    <string name="button_text">Click to download image</string>
     <string name="content_desc">Image to be downloaded</string>
+    <string name="selection_text">Select your choice of download</string>
+    <string name="jpg">jpg image </string>
+    <string name="png">png image</string>
+    <string name="nine_patch">9 patch image</string>
+    <string name="pdf">pdf file</string>
+    <string name="download_button">Click to download selected item</string>
+    <string name="pdf_text">Pdf is downloaded</string>
 </resources>

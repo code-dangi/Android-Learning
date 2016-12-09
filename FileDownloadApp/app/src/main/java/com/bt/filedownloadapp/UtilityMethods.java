@@ -75,16 +75,19 @@ public class UtilityMethods {
     /**
      * utility method to save input stream into a file at external storage
      */
-    public static String saveImage(String imageUrlString, InputStream in, int len) {
+    public static String saveFile(String fileUrlString, InputStream in, int len) {
         File fileDir = null;
         File imageFile = null;
         String fileName = null;
+        String fileExtension = null;
         try {
-            fileName = imageUrlString.substring(imageUrlString.lastIndexOf("/") + 1);
+            fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
+            fileExtension = fileUrlString.substring(fileUrlString.lastIndexOf(".")+1);
+            Log.d(TAG, "saveFile: file extension is "+fileExtension);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        Log.i(TAG, "saveImage: " + fileName);
+        Log.i(TAG, "saveFile: " + fileName);
         if (UtilityMethods.isExternalStorageReadable()) {
             String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
             fileDir = new File(defaultLocation + IConstants.FILE_LOCATION);
@@ -94,7 +97,7 @@ public class UtilityMethods {
             fileDir.mkdirs();
             if (fileName != null) {
                 imageFile = new File(fileDir, fileName);
-                Log.d(TAG, "saveImage: file location " + imageFile.getAbsolutePath());
+                Log.d(TAG, "saveFile: file location " + imageFile.getAbsolutePath());
             }
 
             if (imageFile.exists()) {
@@ -102,7 +105,7 @@ public class UtilityMethods {
             }
 
         } else {
-            Log.d(TAG, "saveImage: check read and write permissions again");
+            Log.d(TAG, "saveFile: check read and write permissions again");
             return null;
         }
         DataInputStream dataInputStream = new DataInputStream(in);
