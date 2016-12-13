@@ -8,23 +8,37 @@
         android:text="@string/selection_text"
         android:id="@+id/selection_text_view"
         android:textSize="@dimen/text_view_size"
-        android:textColor="@android:color/holo_red_dark"/>
+        android:paddingLeft="@dimen/left_padding"
+        android:paddingEnd="@dimen/right_padding"
+        android:paddingStart="@dimen/left_padding"
+        android:paddingRight="@dimen/right_padding"
+        android:textColor="@android:color/holo_red_light"/>
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_alignRight="@id/selection_text_view"
+        android:layout_alignEnd="@+id/image1"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:id="@+id/delete_pref_button"
         android:text="@string/delete_pref_text"
-        android:background="@android:color/holo_red_light"
-        android:textSize="@dimen/button_text_size" />
+        android:background="@drawable/button_state_list"
+        android:paddingLeft="@dimen/left_padding"
+        android:paddingStart="@dimen/left_padding"
+        android:paddingRight="@dimen/right_padding"
+        android:paddingEnd="@dimen/right_padding"/>
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:id="@+id/radio_grp"
         android:layout_marginTop="@dimen/top_margin"
-        android:layout_below="@id/selection_text_view">
+        android:layout_below="@id/selection_text_view"
+        android:paddingLeft="@dimen/left_padding"
+        android:paddingRight="@dimen/right_padding"
+        android:paddingEnd="@dimen/right_padding"
+        android:paddingStart="@dimen/left_padding">
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/top_margin"
-        android:id="@+id/image1"
+        android:id="@id/image1"
         android:layout_centerVertical="true"
         android:layout_below="@id/radio_grp"
         android:contentDescription="@string/content_desc"/>

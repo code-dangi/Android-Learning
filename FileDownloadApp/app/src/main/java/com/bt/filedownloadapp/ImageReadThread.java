@@ -24,6 +24,7 @@ public class ImageReadThread extends Thread {
     public void run() {
         Message msg = Message.obtain();
         msg.obj = BitmapFactory.decodeFile(mImagePath);
-        mImageHandler.sendMessage(msg);
+        msg.what = IConstants.IMAGE_MESSAGE_WHAT;
+        mImageHandler.sendMessageDelayed(msg, 300);
     }
 }

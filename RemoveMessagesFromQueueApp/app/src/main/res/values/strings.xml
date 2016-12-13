@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RemoveMessagesFromQueueApp</string>
+    <string name="text_message">show toast notification</string>
+    <string name="button_send">send message</string>
+    <string name="button_cancel">cancel the messages</string>
+    <string name="toast_message"></string>
+</resources>

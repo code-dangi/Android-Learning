@@ -21,20 +21,22 @@ import java.net.URL;
  * Intent service to download image, for any type of image png or jpg
  */
 
-public class ImageDownloadService extends IntentService {
-    private final String TAG = ImageDownloadService.class.getSimpleName();
+public class FileDownloadService extends IntentService {
+    private final String TAG = FileDownloadService.class.getSimpleName();
 
     /**
      * constructor for Intent Service
      */
-    public ImageDownloadService() {
-        super(ImageDownloadService.class.getSimpleName());
+    public FileDownloadService() {
+        super(FileDownloadService.class.getSimpleName());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         String fileUrlString = intent.getExtras().getString(IConstants.EXTRA_URL);
-        String downloadedFilePath = null;
+        int checkId = intent.getExtras().getInt(IConstants.EXTRA_CHECK_ID);
+        int type = intent.getExtras().getInt(IConstants.EXTRA_TYPE);
+        String downloadedFilePath;
         final ResultReceiver downloadResultReceiver = intent.getParcelableExtra(IConstants.EXTRA_RECEIVER);
         try {
             URL fileUrl = new URL(fileUrlString);
@@ -42,17 +44,18 @@ public class ImageDownloadService extends IntentService {
             int length = connection.getContentLength();
             Log.d(TAG, "onHandleIntent: response code from the request "+ connection.getResponseCode());
             if (connection.getResponseCode() != IConstants.REQUEST_OK_CODE) {
-                showToastNotification(IConstants.ERROR_MESSAGE);
                 downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR_CODE, null);
             } else {
                 InputStream in = connection.getInputStream();
                 Bundle bundle = new Bundle();
-                downloadedFilePath = UtilityMethods.saveFile(fileUrlString, in, length);
+                downloadedFilePath = UtilityMethods.saveFile(fileUrlString, in, length, type);
                 in.close();
                 if (downloadedFilePath == null) {
                     downloadResultReceiver.send(IConstants.DOWNLOAD_ERROR_CODE, null);
                 } else {
                     bundle.putString(IConstants.BUNDLE_PATH, downloadedFilePath);
+                    bundle.putInt(IConstants.BUNDLE_CHECK_ID, checkId);
+                    bundle.putInt(IConstants.BUNDLE_TYPE, type);
                     SharedPreferences.Editor editor = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE).edit();
                     editor.putString(fileUrlString, downloadedFilePath);
                     editor.commit();

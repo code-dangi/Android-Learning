@@ -13,11 +13,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by Monika on 12/5/2016.
@@ -30,14 +30,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SharedPreferences mDownloadedFiles;
     private Snackbar mInternetNotificationBar;
     private ProgressBar mDownloadProgressBar;
-    private Handler mImageHandler;
+    private static Handler sImageHandler;
     private RadioGroup mTypeSelectionGroup;
     private ImageView mDownloadedImage;
     private String mUrlString;
     private TextView mPdfTextView;
+    private int mSavedCheckId;
+    private int mTypeOfDownloadSelected;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Button deleteButton;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDownloadedFiles = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE);
@@ -46,7 +49,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mTypeSelectionGroup.setOnCheckedChangeListener(this);
         mDownloadProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPdfTextView = (TextView) findViewById(R.id.pdf_text_view);
-        findViewById(R.id.delete_pref_button).setOnClickListener(this);
+        deleteButton = (Button) findViewById(R.id.delete_pref_button);
+        deleteButton.setOnClickListener(this);
+        deleteButton.setHovered(true);
         setHandler();
     }
 
@@ -57,29 +62,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (checkId) {
             case R.id.radio_jpg:
                 mUrlString = IConstants.URL_STRING_JPG;
+                mSavedCheckId = checkId;
+                mTypeOfDownloadSelected = IConstants.JPG;
                 break;
             case R.id.radio_png:
                 mUrlString = IConstants.URL_STRING_PNG;
+                mSavedCheckId = checkId;
+                mTypeOfDownloadSelected = IConstants.PNG;
                 break;
             case R.id.radio_patch:
                 mUrlString = IConstants.URL_STRING_9_PATCH;
+                mSavedCheckId = checkId;
+                mTypeOfDownloadSelected = IConstants.PATCH_9;
                 break;
             case R.id.radio_pdf:
                 mUrlString = IConstants.URL_STRING_PDF;
+                mSavedCheckId = checkId;
+                mTypeOfDownloadSelected = IConstants.PDF;
                 break;
             default:
                 Log.d(TAG, "onRadioButtonClick: there is no selection");
         }
-       downloadIfNotExist(mUrlString);
+        cancelMessages();
+        downloadIfNotExist(mUrlString, mSavedCheckId, mTypeOfDownloadSelected);
     }
 
     @Override
     public void onClick(View view) {
-       if (view.getId() == R.id.delete_pref_button) {
-           clearDownloadedFiles(mDownloadedFiles);
-       } else {
-           downloadFile(mUrlString);
-       }
+        if (view.getId() == R.id.delete_pref_button) {
+            clearDownloadedFiles(mDownloadedFiles);
+        } else {
+            downloadFile(mUrlString, mTypeSelectionGroup.getCheckedRadioButtonId(), mTypeOfDownloadSelected);
+        }
     }
     /**
      * clear the cache from shared preferences
@@ -92,12 +106,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * download file if its not exist in preferences
      */
-    private void downloadIfNotExist(String url) {
+    private void downloadIfNotExist(String url, int savedCheckId, int type) {
         String filePath = getFilePath(url);
         if (filePath.equals(IConstants.FILE_NOT_FOUND)) {
             mDownloadedImage.setVisibility(View.GONE);
             mPdfTextView.setVisibility(View.GONE);
-            downloadFile(mUrlString);
+            downloadFile(mUrlString, savedCheckId, type);
         } else {
             String fileExtension = UtilityMethods.getFileExtension(filePath);
             if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
@@ -111,24 +125,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * read image from the given path
      */
     private void readImage(String imagePath) {
+        mDownloadProgressBar.setIndeterminate(true);
+        mDownloadProgressBar.setVisibility(View.VISIBLE);
         mPdfTextView.setVisibility(View.GONE);
+        cancelMessages();
         loadImageFromPath(imagePath);
     }
     /**
      * read file other than image
      */
     private void readFile(String filePath) {
+        mDownloadProgressBar.setIndeterminate(true);
+        mDownloadProgressBar.setVisibility(View.VISIBLE);
         mDownloadedImage.setVisibility(View.GONE);
-        mPdfTextView.setVisibility(View.VISIBLE);
-        mPdfTextView.setText(filePath);
+        cancelMessages();
+        loadPdfPath(filePath);
+    }
+    /**
+     * to set the path of downloaded file from other thread
+     */
+    private void loadPdfPath(String filePath) {
+        FileReadThread fileReadThread = new FileReadThread();
+        fileReadThread.setImagePath(filePath);
+        fileReadThread.setHandler(sImageHandler);
+        fileReadThread.start();
     }
     /**
      * to start intent service
      */
-    private void startFileDownload(String urlString) {
-        Intent imageDownloadIntent = new Intent(this, ImageDownloadService.class);
+    private void startFileDownload(String urlString, int savedCheckId, int type) {
+        Intent imageDownloadIntent = new Intent(this, FileDownloadService.class);
         imageDownloadIntent.putExtra(IConstants.EXTRA_URL, urlString);
-        DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(mImageHandler);
+        imageDownloadIntent.putExtra(IConstants.EXTRA_CHECK_ID, savedCheckId);
+        imageDownloadIntent.putExtra(IConstants.EXTRA_TYPE, type);
+        DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(sImageHandler);
         statusReceiver.setReceiver(this);
         imageDownloadIntent.putExtra(IConstants.EXTRA_RECEIVER, statusReceiver);
         mDownloadProgressBar.setIndeterminate(true);
@@ -138,20 +168,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * showing snackBar when there is no internet connection and keep checking internet
      */
-    private void downloadFile(String urlString) {
+    private void downloadFile(String urlString, int savedCheckId, int type) {
         if (UtilityMethods.isConnectedToInternet(this)) {
             if (mInternetNotificationBar != null && mInternetNotificationBar.isShown()) {
                 mInternetNotificationBar.dismiss();
             }
-            startFileDownload(urlString);
+            startFileDownload(urlString, savedCheckId, type);
         } else {
             mInternetNotificationBar = Snackbar
-                    .make(mTypeSelectionGroup, IConstants.SNACKBAR_TEXT, Snackbar.LENGTH_INDEFINITE)
+                    .make(mTypeSelectionGroup, IConstants.SNACK_BAR_TEXT, Snackbar.LENGTH_INDEFINITE)
                     .setAction(IConstants.RE_TRY, this);
             mInternetNotificationBar.show();
         }
     }
-
+    /**
+     * to cancel all the messages having specific code
+     */
+    private void cancelMessages() {
+        if (sImageHandler.hasMessages(IConstants.IMAGE_MESSAGE_WHAT)) {
+            sImageHandler.removeMessages(IConstants.IMAGE_MESSAGE_WHAT);
+        }
+        if (sImageHandler.hasMessages(IConstants.PDF_MESSAGE_WHAT)) {
+            sImageHandler.removeMessages(IConstants.PDF_MESSAGE_WHAT);
+        }
+    }
     /**
      * check if file is present in preferences
      * @param url: url is key
@@ -167,23 +207,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onFinishDownload(int resultCode, Bundle resultData) {
-        String fileExtension = null;
-        String filePath = null;
+        String fileExtension;
+        String filePath;
+        int checkId;
         if (resultCode == IConstants.CODE_DOWNLOAD_FINISH) {
             filePath = resultData.getString(IConstants.BUNDLE_PATH);
-            fileExtension = UtilityMethods.getFileExtension(filePath);
-            mDownloadProgressBar.setIndeterminate(false);
-            mDownloadProgressBar.setVisibility(View.GONE);
-            if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
-                readImage(filePath);
+            checkId = resultData.getInt(IConstants.BUNDLE_CHECK_ID);
+            int type_id = resultData.getInt(IConstants.BUNDLE_TYPE);
+            if (checkId == mTypeSelectionGroup.getCheckedRadioButtonId()) {
+                fileExtension = UtilityMethods.getFileExtension(filePath);
+                mDownloadProgressBar.setIndeterminate(false);
+                mDownloadProgressBar.setVisibility(View.GONE);
+                if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+                    readImage(filePath);
+                } else {
+                    readFile(filePath);
+                }
+                showNotification(IConstants.SUCCESS_MESSAGE, type_id);
             } else {
-                readFile(filePath);
+                mDownloadProgressBar.setIndeterminate(false);
+                mDownloadProgressBar.setVisibility(View.GONE);
             }
-            showNotification(IConstants.SUCCESS_MESSAGE);
         } else {
             mDownloadProgressBar.setIndeterminate(false);
             mDownloadProgressBar.setVisibility(View.GONE);
-            showNotification(IConstants.ERROR_MESSAGE);
+            showNotification(IConstants.ERROR_MESSAGE, 0);
         }
     }
 
@@ -191,11 +239,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * set handler for ui thread
      */
     private void setHandler() {
-        mImageHandler = new Handler(Looper.getMainLooper()) {
+        sImageHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
-                mDownloadedImage.setVisibility(View.VISIBLE);
+                mDownloadProgressBar.setIndeterminate(false);
+                mDownloadProgressBar.setVisibility(View.GONE);
+                if (msg.what == IConstants.IMAGE_MESSAGE_WHAT) {
+                    mPdfTextView.setVisibility(View.GONE);
+                    mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
+                    mDownloadedImage.setVisibility(View.VISIBLE);
+                    cancelMessages();
+                } else {
+                    mDownloadedImage.setVisibility(View.GONE);
+                    mPdfTextView.setText((String) msg.obj);
+                    mPdfTextView.setVisibility(View.VISIBLE);
+                    cancelMessages();
+                }
             }
         };
     }
@@ -205,24 +264,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param imagePath external storage path of the image
      */
     private void loadImageFromPath(final String imagePath) {
-        ImageReadThread imageReadThread = new ImageReadThread();
+        ImageReadThread imageReadThread;
+        imageReadThread = new ImageReadThread();
         imageReadThread.setImagePath(imagePath);
-        imageReadThread.setHandler(mImageHandler);
+        imageReadThread.setHandler(sImageHandler);
         imageReadThread.start();
     }
     /**
      * show the notifications on the bottom as toast message
      */
-    private void showNotification(String message) {
-        Toast notificationToast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        notificationToast.show();
+    private void showNotification(String message, int type) {
+        if (type == IConstants.JPG) {
+            message = "JPG file downloaded successfully";
+        } else if (type == IConstants.PNG) {
+            message = "PNG file downloaded successfully";
+        } else if (type == IConstants.PATCH_9) {
+            message = "9 patch file downloaded successfully";
+        } else if (type == IConstants.PDF) {
+            message = "PDF file downloaded successfully";
+        }
+        mInternetNotificationBar = Snackbar
+                .make(mTypeSelectionGroup, message, Snackbar.LENGTH_SHORT);
+        mInternetNotificationBar.setDuration(Snackbar.LENGTH_SHORT);
+        mInternetNotificationBar.show();
     }
     /**
      * Method to load image from bitmap byte array by launching a thread and using handler
      * @param bitmapByteArray input byte array
      */
     private void loadImageFromByteArray(final byte[] bitmapByteArray) {
-        mImageHandler = new Handler() {
+        sImageHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 Bitmap bmp = (Bitmap) msg.obj;
@@ -235,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (bitmapByteArray != null) {
                     Message msg = Message.obtain();
                     msg.obj = BitmapFactory.decodeByteArray(bitmapByteArray, 0, bitmapByteArray.length);
-                    mImageHandler.sendMessage(msg);
+                    sImageHandler.sendMessage(msg);
                 }
             }
         };

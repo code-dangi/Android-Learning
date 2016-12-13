@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Created by Monika on 12/6/2016.
@@ -26,13 +25,12 @@ public class UtilityMethods {
     /**
      * to copy input stream to output stream
      */
-    public static void copyStreams(InputStream in, OutputStream out) {
+    public static void copyStreams(DataInputStream in, DataOutputStream out) {
         byte [] buffer = new byte[1024];
         try {
-            int len = in.read(buffer);
-            while (len != -1) {
+            while (in.available() > 0) {
+               in.readFully(buffer);
                 out.write(buffer);
-                len = in.read(buffer, 0 , len);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,11 +63,8 @@ public class UtilityMethods {
      */
     public static boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+        return (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state));
     }
     /**
      * function to convert input stream to bitmap and bitmap to byte array
@@ -83,11 +78,12 @@ public class UtilityMethods {
     /**
      * utility method to save input stream into a file at external storage
      */
-    public static String saveFile(String fileUrlString, InputStream in, int len) {
-        File fileDir = null;
+    public static String saveFile(String fileUrlString, InputStream in, int len, int type) {
+        File fileDir;
         File imageFile = null;
         String fileName = null;
         String fileExtension = null;
+        byte[] buffer;
         try {
             fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
             fileExtension = UtilityMethods.getFileExtension(fileName);
@@ -110,25 +106,34 @@ public class UtilityMethods {
                 }
             }
             if (fileName != null) {
+                if (fileExtension.equals("png") && type == IConstants.PATCH_9) {
+                    fileName = fileName.replace(".png", ".9.png");
+                }
                 imageFile = new File(fileDir, fileName);
                 Log.d(TAG, "saveFile: file location " + imageFile.getAbsolutePath());
             }
             if (imageFile.exists()) {
-                return imageFile.getAbsolutePath();
+                imageFile.delete();
+                /*return imageFile.getAbsolutePath();*/
             }
         } else {
             Log.d(TAG, "saveFile: check read and write permissions again");
             return null;
         }
+        if (len < 0) {
+            Log.d(TAG, "saveFile: len is zero");
+            return null;
+        } else {
+            buffer = new byte[len];
+        }
         DataInputStream dataInputStream = new DataInputStream(in);
-        byte[] buffer = new byte[len];
         try {
-            dataInputStream.readFully(buffer);
-            dataInputStream.close();
             if (buffer.length > 0) {
                 DataOutputStream out;
-                FileOutputStream fos = new FileOutputStream(imageFile);
+                FileOutputStream fos = new FileOutputStream(imageFile, true);
                 out = new DataOutputStream(fos);
+                dataInputStream.readFully(buffer);
+                dataInputStream.close();
                 out.write(buffer);
                 out.flush();
                 out.close();

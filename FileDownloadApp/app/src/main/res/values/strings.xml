@@ -6,7 +6,5 @@
     <string name="png">png image</string>
     <string name="nine_patch">9 patch image</string>
     <string name="pdf">pdf file</string>
-    <string name="download_button">Click to download selected item</string>
-    <string name="pdf_text">Pdf is downloaded</string>
-    <string name="delete_pref_text">Delete already downloaded file</string>
+    <string name="delete_pref_text">Delete all already downloaded files</string>
 </resources>
