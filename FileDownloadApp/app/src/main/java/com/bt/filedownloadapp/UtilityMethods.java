@@ -88,11 +88,12 @@ public class UtilityMethods {
             fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
             fileExtension = UtilityMethods.getFileExtension(fileName);
             Log.d(TAG, "saveFile: file extension is "+fileExtension);
-        } catch (NullPointerException e) {
+        } catch (NullPointerException e) { // have if else and null checks
             e.printStackTrace();
+            return null;
         }
         Log.i(TAG, "saveFile: " + fileName);
-        if (UtilityMethods.isExternalStorageReadable()) {
+        if (isExternalStorageReadable()) {
             String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
             fileDir = new File(defaultLocation + IConstants.FILE_LOCATION);
             if (fileDir.exists()) {
@@ -140,7 +141,7 @@ public class UtilityMethods {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        } // add finally block too
         return imageFile.getAbsolutePath();
         /*need to add some code into the service to make it work, create new urlconnection
         * int length = connection.getContentLength();

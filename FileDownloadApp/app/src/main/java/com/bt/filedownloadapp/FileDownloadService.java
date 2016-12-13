@@ -33,6 +33,7 @@ public class FileDownloadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        // if has extra should be added
         String fileUrlString = intent.getExtras().getString(IConstants.EXTRA_URL);
         int checkId = intent.getExtras().getInt(IConstants.EXTRA_CHECK_ID);
         int type = intent.getExtras().getInt(IConstants.EXTRA_TYPE);

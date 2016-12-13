@@ -28,19 +28,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         DownloadStatusReceiver.IReceiver, RadioGroup.OnCheckedChangeListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private SharedPreferences mDownloadedFiles;
-    private Snackbar mInternetNotificationBar;
+    private Snackbar mNotificationBar;
     private ProgressBar mDownloadProgressBar;
     private static Handler sImageHandler;
     private RadioGroup mTypeSelectionGroup;
     private ImageView mDownloadedImage;
     private String mUrlString;
-    private TextView mPdfTextView;
+    private TextView mPdfPathTextView;
     private int mSavedCheckId;
-    private int mTypeOfDownloadSelected;
+    private int mSelectedType;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Button deleteButton;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDownloadedFiles = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE);
@@ -48,8 +47,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDownloadedImage = (ImageView) findViewById(R.id.image1);
         mTypeSelectionGroup.setOnCheckedChangeListener(this);
         mDownloadProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
-        mPdfTextView = (TextView) findViewById(R.id.pdf_text_view);
-        deleteButton = (Button) findViewById(R.id.delete_pref_button);
+        mPdfPathTextView = (TextView) findViewById(R.id.pdf_text_view);
+        Button deleteButton = (Button) findViewById(R.id.delete_pref_button);
         deleteButton.setOnClickListener(this);
         deleteButton.setHovered(true);
         setHandler();
@@ -63,28 +62,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.radio_jpg:
                 mUrlString = IConstants.URL_STRING_JPG;
                 mSavedCheckId = checkId;
-                mTypeOfDownloadSelected = IConstants.JPG;
+                mSelectedType = IConstants.JPG;
                 break;
             case R.id.radio_png:
                 mUrlString = IConstants.URL_STRING_PNG;
                 mSavedCheckId = checkId;
-                mTypeOfDownloadSelected = IConstants.PNG;
+                mSelectedType = IConstants.PNG;
                 break;
             case R.id.radio_patch:
                 mUrlString = IConstants.URL_STRING_9_PATCH;
                 mSavedCheckId = checkId;
-                mTypeOfDownloadSelected = IConstants.PATCH_9;
+                mSelectedType = IConstants.PATCH_9;
                 break;
             case R.id.radio_pdf:
                 mUrlString = IConstants.URL_STRING_PDF;
                 mSavedCheckId = checkId;
-                mTypeOfDownloadSelected = IConstants.PDF;
+                mSelectedType = IConstants.PDF;
                 break;
             default:
                 Log.d(TAG, "onRadioButtonClick: there is no selection");
         }
         cancelMessages();
-        downloadIfNotExist(mUrlString, mSavedCheckId, mTypeOfDownloadSelected);
+        downloadIfNotExist(mUrlString, mSavedCheckId, mSelectedType);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (view.getId() == R.id.delete_pref_button) {
             clearDownloadedFiles(mDownloadedFiles);
         } else {
-            downloadFile(mUrlString, mTypeSelectionGroup.getCheckedRadioButtonId(), mTypeOfDownloadSelected);
+            downloadFile(mUrlString, mTypeSelectionGroup.getCheckedRadioButtonId(), mSelectedType);
         }
     }
     /**
@@ -102,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.commit();
+        showNotification(IConstants.All_DELETED, 0);
     }
     /**
      * download file if its not exist in preferences
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String filePath = getFilePath(url);
         if (filePath.equals(IConstants.FILE_NOT_FOUND)) {
             mDownloadedImage.setVisibility(View.GONE);
-            mPdfTextView.setVisibility(View.GONE);
+            mPdfPathTextView.setVisibility(View.GONE);
             downloadFile(mUrlString, savedCheckId, type);
         } else {
             String fileExtension = UtilityMethods.getFileExtension(filePath);
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void readImage(String imagePath) {
         mDownloadProgressBar.setIndeterminate(true);
         mDownloadProgressBar.setVisibility(View.VISIBLE);
-        mPdfTextView.setVisibility(View.GONE);
+        mPdfPathTextView.setVisibility(View.GONE);
         cancelMessages();
         loadImageFromPath(imagePath);
     }
@@ -170,15 +170,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void downloadFile(String urlString, int savedCheckId, int type) {
         if (UtilityMethods.isConnectedToInternet(this)) {
-            if (mInternetNotificationBar != null && mInternetNotificationBar.isShown()) {
-                mInternetNotificationBar.dismiss();
+            if (mNotificationBar != null && mNotificationBar.isShown()) {
+                mNotificationBar.dismiss();
             }
             startFileDownload(urlString, savedCheckId, type);
         } else {
-            mInternetNotificationBar = Snackbar
+            mNotificationBar = Snackbar
                     .make(mTypeSelectionGroup, IConstants.SNACK_BAR_TEXT, Snackbar.LENGTH_INDEFINITE)
                     .setAction(IConstants.RE_TRY, this);
-            mInternetNotificationBar.show();
+            mNotificationBar.show();
         }
     }
     /**
@@ -212,19 +212,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int checkId;
         if (resultCode == IConstants.CODE_DOWNLOAD_FINISH) {
             filePath = resultData.getString(IConstants.BUNDLE_PATH);
-            checkId = resultData.getInt(IConstants.BUNDLE_CHECK_ID);
-            int type_id = resultData.getInt(IConstants.BUNDLE_TYPE);
-            if (checkId == mTypeSelectionGroup.getCheckedRadioButtonId()) {
-                fileExtension = UtilityMethods.getFileExtension(filePath);
-                mDownloadProgressBar.setIndeterminate(false);
-                mDownloadProgressBar.setVisibility(View.GONE);
-                if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
-                    readImage(filePath);
+                checkId = resultData.getInt(IConstants.BUNDLE_CHECK_ID);
+                int type_id = resultData.getInt(IConstants.BUNDLE_TYPE);
+                if (checkId == mTypeSelectionGroup.getCheckedRadioButtonId()) {
+                    fileExtension = UtilityMethods.getFileExtension(filePath);
+                    mDownloadProgressBar.setIndeterminate(false);
+                    mDownloadProgressBar.setVisibility(View.GONE);
+                    if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+                        readImage(filePath);
+                    } else {
+                        readFile(filePath);
+                    }
+                    showNotification(IConstants.SUCCESS_MESSAGE, type_id);
                 } else {
-                    readFile(filePath);
-                }
-                showNotification(IConstants.SUCCESS_MESSAGE, type_id);
-            } else {
                 mDownloadProgressBar.setIndeterminate(false);
                 mDownloadProgressBar.setVisibility(View.GONE);
             }
@@ -245,14 +245,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mDownloadProgressBar.setIndeterminate(false);
                 mDownloadProgressBar.setVisibility(View.GONE);
                 if (msg.what == IConstants.IMAGE_MESSAGE_WHAT) {
-                    mPdfTextView.setVisibility(View.GONE);
+                    mPdfPathTextView.setVisibility(View.GONE);
                     mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
                     mDownloadedImage.setVisibility(View.VISIBLE);
                     cancelMessages();
                 } else {
                     mDownloadedImage.setVisibility(View.GONE);
-                    mPdfTextView.setText((String) msg.obj);
-                    mPdfTextView.setVisibility(View.VISIBLE);
+                    mPdfPathTextView.setText((String) msg.obj);
+                    mPdfPathTextView.setVisibility(View.VISIBLE);
                     cancelMessages();
                 }
             }
@@ -283,10 +283,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (type == IConstants.PDF) {
             message = "PDF file downloaded successfully";
         }
-        mInternetNotificationBar = Snackbar
+        mNotificationBar = Snackbar
                 .make(mTypeSelectionGroup, message, Snackbar.LENGTH_SHORT);
-        mInternetNotificationBar.setDuration(Snackbar.LENGTH_SHORT);
-        mInternetNotificationBar.show();
+        mNotificationBar.setDuration(3000);
+        mNotificationBar.show();
     }
     /**
      * Method to load image from bitmap byte array by launching a thread and using handler

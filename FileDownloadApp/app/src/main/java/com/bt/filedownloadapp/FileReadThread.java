@@ -11,7 +11,7 @@ import android.os.Message;
 public class FileReadThread extends Thread {
     private String mFilePath;
     private Handler mFileHandler;
-
+    // combine with image thread..
     public void setImagePath(String imagePath) {
         mFilePath =imagePath;
     }

@@ -27,6 +27,7 @@ public interface IConstants {
     String SUCCESS_MESSAGE = "Successfully Downloaded";
     String ERROR_MESSAGE = "Something went wrong check your internet connection";
     String RE_TRY = "Re-Try";
+    String All_DELETED = "Downloaded files deleted successfully";
 
     /*codes*/
     int CODE_DOWNLOAD_FINISH = 100;
