@@ -84,14 +84,9 @@ public class UtilityMethods {
         String fileName = null;
         String fileExtension = null;
         byte[] buffer;
-        try {
-            fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
-            fileExtension = UtilityMethods.getFileExtension(fileName);
-            Log.d(TAG, "saveFile: file extension is "+fileExtension);
-        } catch (NullPointerException e) { // have if else and null checks
-            e.printStackTrace();
-            return null;
-        }
+        fileName = fileUrlString.substring(fileUrlString.lastIndexOf("/") + 1);
+        fileExtension = UtilityMethods.getFileExtension(fileName);
+        Log.d(TAG, "saveFile: file extension is "+fileExtension);
         Log.i(TAG, "saveFile: " + fileName);
         if (isExternalStorageReadable()) {
             String defaultLocation = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath();
@@ -115,7 +110,6 @@ public class UtilityMethods {
             }
             if (imageFile.exists()) {
                 imageFile.delete();
-                /*return imageFile.getAbsolutePath();*/
             }
         } else {
             Log.d(TAG, "saveFile: check read and write permissions again");

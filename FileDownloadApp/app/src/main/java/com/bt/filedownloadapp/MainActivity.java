@@ -115,39 +115,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             String fileExtension = UtilityMethods.getFileExtension(filePath);
             if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
-                readImage(filePath);
+                readFile(filePath, true);
             } else {
-                readFile(filePath);
+                readFile(filePath, false);
             }
         }
     }
     /**
-     * read image from the given path
-     */
-    private void readImage(String imagePath) {
-        mDownloadProgressBar.setIndeterminate(true);
-        mDownloadProgressBar.setVisibility(View.VISIBLE);
-        mPdfPathTextView.setVisibility(View.GONE);
-        cancelMessages();
-        loadImageFromPath(imagePath);
-    }
-    /**
      * read file other than image
      */
-    private void readFile(String filePath) {
+    private void readFile(String filePath, boolean isImage) {
         mDownloadProgressBar.setIndeterminate(true);
         mDownloadProgressBar.setVisibility(View.VISIBLE);
         mDownloadedImage.setVisibility(View.GONE);
         cancelMessages();
-        loadPdfPath(filePath);
+        loadFile(filePath, isImage);
     }
     /**
      * to set the path of downloaded file from other thread
      */
-    private void loadPdfPath(String filePath) {
+    private void loadFile(String filePath, boolean isImage) {
         FileReadThread fileReadThread = new FileReadThread();
         fileReadThread.setImagePath(filePath);
         fileReadThread.setHandler(sImageHandler);
+        fileReadThread.setIsImage(isImage);
         fileReadThread.start();
     }
     /**
@@ -210,27 +201,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String fileExtension;
         String filePath;
         int checkId;
+        mDownloadProgressBar.setIndeterminate(false);
+        mDownloadProgressBar.setVisibility(View.GONE);
         if (resultCode == IConstants.CODE_DOWNLOAD_FINISH) {
             filePath = resultData.getString(IConstants.BUNDLE_PATH);
-                checkId = resultData.getInt(IConstants.BUNDLE_CHECK_ID);
-                int type_id = resultData.getInt(IConstants.BUNDLE_TYPE);
-                if (checkId == mTypeSelectionGroup.getCheckedRadioButtonId()) {
-                    fileExtension = UtilityMethods.getFileExtension(filePath);
-                    mDownloadProgressBar.setIndeterminate(false);
-                    mDownloadProgressBar.setVisibility(View.GONE);
-                    if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
-                        readImage(filePath);
-                    } else {
-                        readFile(filePath);
-                    }
-                    showNotification(IConstants.SUCCESS_MESSAGE, type_id);
+            checkId = resultData.getInt(IConstants.BUNDLE_CHECK_ID);
+            int type_id = resultData.getInt(IConstants.BUNDLE_TYPE);
+            if (checkId == mTypeSelectionGroup.getCheckedRadioButtonId()) {
+                fileExtension = UtilityMethods.getFileExtension(filePath);
+                if (fileExtension.equals("jpg") || fileExtension.equals("png")) {
+                    readFile(filePath, true);
                 } else {
-                mDownloadProgressBar.setIndeterminate(false);
-                mDownloadProgressBar.setVisibility(View.GONE);
+                    readFile(filePath, false);
+                }
+                showNotification(IConstants.SUCCESS_MESSAGE, type_id);
             }
         } else {
-            mDownloadProgressBar.setIndeterminate(false);
-            mDownloadProgressBar.setVisibility(View.GONE);
             showNotification(IConstants.ERROR_MESSAGE, 0);
         }
     }
@@ -248,28 +234,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mPdfPathTextView.setVisibility(View.GONE);
                     mDownloadedImage.setImageBitmap((Bitmap) msg.obj);
                     mDownloadedImage.setVisibility(View.VISIBLE);
-                    cancelMessages();
                 } else {
                     mDownloadedImage.setVisibility(View.GONE);
                     mPdfPathTextView.setText((String) msg.obj);
                     mPdfPathTextView.setVisibility(View.VISIBLE);
-                    cancelMessages();
                 }
+                cancelMessages();
             }
         };
     }
 
-    /**
-     * load image from given image path
-     * @param imagePath external storage path of the image
-     */
-    private void loadImageFromPath(final String imagePath) {
-        ImageReadThread imageReadThread;
-        imageReadThread = new ImageReadThread();
-        imageReadThread.setImagePath(imagePath);
-        imageReadThread.setHandler(sImageHandler);
-        imageReadThread.start();
-    }
     /**
      * show the notifications on the bottom as toast message
      */
@@ -285,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         mNotificationBar = Snackbar
                 .make(mTypeSelectionGroup, message, Snackbar.LENGTH_SHORT);
-        mNotificationBar.setDuration(3000);
         mNotificationBar.show();
     }
     /**
