@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--padding -->
+    <dimen name="image_top_margin">30dp</dimen>
+    <dimen name="image_left_padding">40dp</dimen>
+    <dimen name="image_right_padding">10dp</dimen>
+    <dimen name="left_padding">20dp</dimen>
+    <dimen name="right_padding">10dp</dimen>
+    <dimen name="top_margin">10dp</dimen>
+</resources>

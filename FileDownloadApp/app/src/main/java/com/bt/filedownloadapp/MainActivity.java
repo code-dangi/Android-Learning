@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mPdfPathTextView;
     private int mSavedCheckId;
     private int mSelectedType;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,14 +45,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDownloadedFiles = getSharedPreferences(IConstants.PREFERENCE_NAME, MODE_PRIVATE);
         mTypeSelectionGroup = (RadioGroup) findViewById(R.id.radio_grp);
         mDownloadedImage = (ImageView) findViewById(R.id.image1);
-        mTypeSelectionGroup.setOnCheckedChangeListener(this);
         mDownloadProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
         mPdfPathTextView = (TextView) findViewById(R.id.pdf_text_view);
         Button deleteButton = (Button) findViewById(R.id.delete_pref_button);
         deleteButton.setOnClickListener(this);
         deleteButton.setHovered(true);
         setHandler();
+        if (savedInstanceState != null) {
+            mTypeSelectionGroup.check(savedInstanceState.getInt(IConstants.SAVED_CHECK_ID));
+            if (savedInstanceState.getBoolean(IConstants.SAVED_IS_PROGRESSING)) {
+                downloadIfNotExist(savedInstanceState.getString(IConstants.SAVED_FILE_PATH),
+                        savedInstanceState.getInt(IConstants.SAVED_CHECK_ID),
+                        savedInstanceState.getInt(IConstants.SAVED_FILE_TYPE));
+            } else if (savedInstanceState.getBoolean(IConstants.SAVED_FILE_TYPE)) {
+                mDownloadedImage.setImageBitmap(
+                        (Bitmap) savedInstanceState.getParcelable(IConstants.SAVED_IMAGE));
+                mDownloadedImage.setVisibility(View.VISIBLE);
+            } else {
+                mPdfPathTextView.setText(savedInstanceState.getCharSequence(
+                        IConstants.SAVED_PDF_PATH));
+                mPdfPathTextView.setVisibility(View.VISIBLE);
+            }
+        }
+        mTypeSelectionGroup.setOnCheckedChangeListener(this);
     }
+
 
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -83,7 +100,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(TAG, "onRadioButtonClick: there is no selection");
         }
         cancelMessages();
-        downloadIfNotExist(mUrlString, mSavedCheckId, mSelectedType);
+        if (mUrlString != null) {
+            downloadIfNotExist(mUrlString, mSavedCheckId, mSelectedType);
+        }
+
     }
 
     @Override
@@ -155,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mDownloadProgressBar.setIndeterminate(true);
         mDownloadProgressBar.setVisibility(View.VISIBLE);
         startService(imageDownloadIntent);
+
     }
     /**
      * showing snackBar when there is no internet connection and keep checking internet
@@ -261,6 +282,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .make(mTypeSelectionGroup, message, Snackbar.LENGTH_SHORT);
         mNotificationBar.show();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(IConstants.SAVED_CHECK_ID, mTypeSelectionGroup.getCheckedRadioButtonId());
+        BitmapDrawable drawable = (BitmapDrawable) mDownloadedImage.getDrawable();
+        CharSequence charSequence = mPdfPathTextView.getText();
+        boolean isImage;
+        if (mDownloadedImage.isShown() && drawable != null) {
+            outState.putParcelable(IConstants.SAVED_IMAGE, drawable.getBitmap());
+            outState.putBoolean(IConstants.SAVED_FILE_TYPE, true);
+        } else if (mPdfPathTextView.isShown() && charSequence != null) {
+            outState.putCharSequence(IConstants.SAVED_PDF_PATH, charSequence);
+            outState.putBoolean(IConstants.SAVED_FILE_TYPE, false);
+        }
+        if (mDownloadProgressBar.isShown()) {
+            outState.putBoolean(IConstants.SAVED_IS_PROGRESSING, true);
+            outState.putInt(IConstants.SAVED_CHECK_ID, mSavedCheckId);
+            outState.putString(IConstants.SAVED_FILE_PATH, mUrlString);
+            outState.putInt(IConstants.SAVED_FILE_TYPE, mSelectedType);
+        }
+
+    }
+
     /**
      * Method to load image from bitmap byte array by launching a thread and using handler
      * @param bitmapByteArray input byte array

@@ -1,4 +1,7 @@
 package com.bt.filedownloadapp;
+
+import android.graphics.Bitmap;
+
 public interface IConstants {
     /*URL strings */
     String URL_STRING_PNG = "http://icdn.pro/images/en/f/i/file-icone-9468-128.png";
@@ -41,4 +44,12 @@ public interface IConstants {
     int PNG = 2;
     int PATCH_9 = 3;
     int PDF = 4;
+
+    /*saved instance bundle variables */
+    String SAVED_CHECK_ID = "savedCheckId";
+    String SAVED_IMAGE = "savedImage";
+    String SAVED_PDF_PATH = "savedPdfPath";
+    String SAVED_IS_PROGRESSING = "isImageReadInProgress";
+    String SAVED_FILE_PATH = "fileLocation";
+    String SAVED_FILE_TYPE = "savedFileType";
 }
