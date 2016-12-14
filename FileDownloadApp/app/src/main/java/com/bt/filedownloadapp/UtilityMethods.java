@@ -122,20 +122,26 @@ public class UtilityMethods {
             buffer = new byte[len];
         }
         DataInputStream dataInputStream = new DataInputStream(in);
+        DataOutputStream out = null;
         try {
             if (buffer.length > 0) {
-                DataOutputStream out;
+
                 FileOutputStream fos = new FileOutputStream(imageFile, true);
                 out = new DataOutputStream(fos);
                 dataInputStream.readFully(buffer);
-                dataInputStream.close();
                 out.write(buffer);
-                out.flush();
-                out.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } // add finally block too
+        } finally {
+            try {
+                dataInputStream.close();
+                out.flush();
+                out.close();
+            } catch (IOException E) {
+                E.printStackTrace();
+            }
+        }
         return imageFile.getAbsolutePath();
         /*need to add some code into the service to make it work, create new urlconnection
         * int length = connection.getContentLength();
