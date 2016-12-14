@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ファイルダウンロードアプリ</string>
+    <string name="content_desc">ダウンロードする画像</string>
+    <string name="selection_text">あなたの選択を選択してください</string>
+    <string name="jpg">jpg 画像</string>
+    <string name="png">png 画像</string>
+    <string name="nine_patch">9 patch 画像</string>
+    <string name="pdf">pdf ファイル</string>
+    <string name="delete_pref_text">既にダウンロードしたファイルをすべて削除する</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Télécharger un fichier</string>
+    <string name="content_desc">Image à télécharger</string>
+    <string name="selection_text">Sélectionnez votre choix de téléchargement</string>
+    <string name="jpg">jpg image </string>
+    <string name="png">png image</string>
+    <string name="nine_patch">9 patch image</string>
+    <string name="pdf">fichier PDF</string>
+    <string name="delete_pref_text">Supprimer tous les fichiers déjà téléchargés</string>
+</resources>
