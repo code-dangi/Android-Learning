@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mPdfPathTextView;
     private int mSavedCheckId;
     private int mSelectedType;
+    private Intent mImageDownloadIntent;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,16 +166,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * to start intent service
      */
     private void startFileDownload(String urlString, int savedCheckId, int type) {
-        Intent imageDownloadIntent = new Intent(this, FileDownloadService.class);
-        imageDownloadIntent.putExtra(IConstants.EXTRA_URL, urlString);
-        imageDownloadIntent.putExtra(IConstants.EXTRA_CHECK_ID, savedCheckId);
-        imageDownloadIntent.putExtra(IConstants.EXTRA_TYPE, type);
+        mImageDownloadIntent = new Intent(this, FileDownloadService.class);
+        mImageDownloadIntent.putExtra(IConstants.EXTRA_URL, urlString);
+        mImageDownloadIntent.putExtra(IConstants.EXTRA_CHECK_ID, savedCheckId);
+        mImageDownloadIntent.putExtra(IConstants.EXTRA_TYPE, type);
         DownloadStatusReceiver statusReceiver= new DownloadStatusReceiver(sImageHandler);
         statusReceiver.setReceiver(this);
-        imageDownloadIntent.putExtra(IConstants.EXTRA_RECEIVER, statusReceiver);
+        mImageDownloadIntent.putExtra(IConstants.EXTRA_RECEIVER, statusReceiver);
         mDownloadProgressBar.setIndeterminate(true);
         mDownloadProgressBar.setVisibility(View.VISIBLE);
-        startService(imageDownloadIntent);
+        startService(mImageDownloadIntent);
 
     }
     /**
@@ -289,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         outState.putInt(IConstants.SAVED_CHECK_ID, mTypeSelectionGroup.getCheckedRadioButtonId());
         BitmapDrawable drawable = (BitmapDrawable) mDownloadedImage.getDrawable();
         CharSequence charSequence = mPdfPathTextView.getText();
-        boolean isImage;
         if (mDownloadedImage.isShown() && drawable != null) {
             outState.putParcelable(IConstants.SAVED_IMAGE, drawable.getBitmap());
             outState.putBoolean(IConstants.SAVED_FILE_TYPE, true);
@@ -304,6 +304,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             outState.putInt(IConstants.SAVED_FILE_TYPE, mSelectedType);
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(mImageDownloadIntent);
     }
 
     /**

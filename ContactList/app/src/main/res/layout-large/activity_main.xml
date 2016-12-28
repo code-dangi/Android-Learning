@@ -9,7 +9,7 @@
     android:layout_width="0dp"
     android:layout_weight="1"
     android:layout_height="match_parent"
-    android:id="@+id/listContainer">
+    android:id="@+id/contact_list_container">
 
 </LinearLayout>
 <LinearLayout

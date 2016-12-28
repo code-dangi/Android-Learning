@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 class NewsRecyclerAdapter extends RecyclerView.Adapter {
     private ArrayList<News> mNewsList;
-    private LayoutInflater mLayoutInflator;
+    private LayoutInflater mLayoutInflater;
     // View holder class for three TextViews
     private class ViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
@@ -38,7 +38,7 @@ class NewsRecyclerAdapter extends RecyclerView.Adapter {
      */
     NewsRecyclerAdapter(Context context, ArrayList<News> newsList){
         mNewsList = newsList;
-        mLayoutInflator = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
 
@@ -50,7 +50,7 @@ class NewsRecyclerAdapter extends RecyclerView.Adapter {
      */
     @Override
     public NewsRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mLayoutInflator.inflate(R.layout.recycler_view, parent, false);
+        View view = mLayoutInflater.inflate(R.layout.recycler_view, parent, false);
         return new ViewHolder(view);
     }
 

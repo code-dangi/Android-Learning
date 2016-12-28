@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height"
+        android:id="@+id/text11"
+        android:background="@color/colorPrimary"
+        android:text="Names"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:drawableTop="@color/colorAccent"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/text11"
+        android:id="@+id/listView"
+        android:background="@color/colorAccent"/>
+
+</RelativeLayout>

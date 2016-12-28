@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/e_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="@string/hint_e_name"
+        android:imeOptions="actionGo"
+        android:nextFocusForward="@+id/d_name"
+        android:textColor="@color/colorAccent" />
+
+    <EditText
+        android:id="@id/d_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top"
+        android:hint="@string/hint_d_name"
+        android:nextFocusForward="@+id/button_save"
+        android:textColor="@color/colorAccent" />
+
+    <Button
+        android:id="@id/button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top"
+        android:text="@string/button_save"
+        android:textColor="@color/colorAccent" />
+
+    <Button
+        android:id="@+id/button_retrieve"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top"
+        android:text="@string/button_retrieve"
+        android:textColor="@color/colorAccent" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/employee_recycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_top"/>
+</LinearLayout>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">EmployeeDataAccessApp</string>
+    <string name="hint_e_name">Enter Employee Name</string>
+    <string name="hint_d_name">Enter Department Name</string>
+    <string name="button_save">Save to database</string>
+    <string name="button_retrieve">Get the data just saved</string>
+    <string name="read_permission">com.bt.employeedataaccessapp.provider.READ_PROVIDER</string>
+    <string name="write_permission">com.bt.employeedataaccessapp.provider.WRITE_PROVIDER</string>
+    <!--fro recycler layout-->
+    <string name="hint_recycler_name">Employee Name</string>
+    <string name="hint_recycler_dept_name">Department Name</string>
+</resources>

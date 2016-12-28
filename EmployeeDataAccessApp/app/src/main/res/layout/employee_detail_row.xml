@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/margin_top"
+    android:weightSum="2">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_recycler_name"
+        android:id="@+id/recycler_name"
+        android:padding="@dimen/padding"
+        android:textColor="@color/colorAccent"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/recycler_d_name"
+        android:textColor="@color/colorAccent"
+        android:hint="@string/hint_recycler_dept_name"/>
+</LinearLayout>

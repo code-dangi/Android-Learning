@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--margins-->
+    <dimen name="margin_top">30dp</dimen>
+    <!--padding-->
+    <dimen name="padding">5dp</dimen>
+</resources>
