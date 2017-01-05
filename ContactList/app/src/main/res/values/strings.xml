@@ -1,9 +1,21 @@
 <resources>
-    <string name="app_name">ContactList</string>
-    <string name="text_detail">Detail</string>
+    <string name="app_name">Contact List</string>
+    <string name="add_new_contact">Add New Contact</string>
+
     <!--hints for text views-->
     <string name="hint_name">Name</string>
     <string name="hint_number">Phone Number</string>
-    <string name="hint_email">Email</string>
+    <string name="hint_enter_name">Enter Name</string>
+    <string name="hint_enter_phone">Enter Phone Number</string>
 
+    <!--descriptions-->
+    <string name="image_description">Thumbnail for contact</string>
+    <string name="new_contact_desc">Add new contact</string>
+    <string name="text_name">Name</string>
+    <string name="save_contact">Save contact details</string>
+
+    <!--Toolbar icons-->
+    <string name="action_edit_contact">Edit</string>
+    <string name="action_delete_contact">Delete</string>
+    <string name="action_contact_settings">Settings</string>
 </resources>

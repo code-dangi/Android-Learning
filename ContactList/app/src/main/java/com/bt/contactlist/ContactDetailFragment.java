@@ -1,5 +1,6 @@
 package com.bt.contactlist;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,24 +14,32 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 /**
  * Created by Monika on 11/11/2016.
  * Detail fragment that shows phone number and Name from the contact
  */
 
-public class ContactDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks{
+public class ContactDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String TAG = ContactDetailFragment.class.getSimpleName();
     private Uri mContactUri;
     private TextView mContactName;
     private TextView mContactNumber;
+    private ImageView mDisplayPhoto;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Log.d(TAG, "onCreate");
     }
 
@@ -38,10 +47,17 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
 
     public void setContact(Uri contactLookUpUri) {
         mContactUri = contactLookUpUri;
+        loadDisplayImage(contactLookUpUri);
         getLoaderManager().restartLoader(ContactDetailQuery.QUERY_ID, null, this);
         getLoaderManager().restartLoader(ContactPhoneNumberQuery.QUERY_ID, null, this);
         getLoaderManager().restartLoader(ContactAddressQuery.QUERY_ID, null, this);
     }
+
+    private void loadDisplayImage(Uri contactLookUpUri) {
+        Uri displayPhotoUri = Uri.withAppendedPath(contactLookUpUri, Contacts.Photo.DISPLAY_PHOTO);
+        Glide.with(getActivity()).load(displayPhotoUri).into(mDisplayPhoto);
+    }
+
     @Nullable
     @Override
     public View onCreateView (LayoutInflater inflater, @Nullable ViewGroup container,
@@ -49,6 +65,7 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         View view =inflater.inflate(R.layout.fragment_contact_detail, container, false);
         mContactName = (TextView) view.findViewById(R.id.name);
         mContactNumber = (TextView) view.findViewById(R.id.number);
+        mDisplayPhoto = (ImageView) view.findViewById(R.id.contact_photo);
         if(savedInstanceState != null){
             mContactName.setText(savedInstanceState.getCharSequence(
                     IConstants.BUNDLE_SAVED_INSTANCE_NAME));
@@ -73,7 +90,26 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.edit_contact:
+                Intent intent = new Intent(Intent.ACTION_EDIT, mContactUri);
+                startActivity(intent);
+                break;
+            case R.id.delete_contact:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.app_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case ContactDetailQuery.QUERY_ID:
                 return new CursorLoader(getActivity(), mContactUri, ContactDetailQuery.PROJECTION,
@@ -92,27 +128,26 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader loader, Object data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (mContactUri == null) {
             return;
         }
-        Cursor cursor = (Cursor) data;
         switch (loader.getId()) {
             case ContactDetailQuery.QUERY_ID:
-                if (cursor.moveToFirst()) {
-                    final String contactName = cursor.getString(ContactDetailQuery.DISPLAY_NAME);
+                if (data.moveToFirst()) {
+                    final String contactName = data.getString(ContactDetailQuery.DISPLAY_NAME);
                     mContactName.setText(contactName);
                 }
                 break;
             case ContactPhoneNumberQuery.QUERY_ID:
-                if (cursor.moveToFirst()) {
-                    final String contactNumber = cursor.getString(ContactPhoneNumberQuery.PHONE_NUMBER);
+                if (data.moveToFirst()) {
+                    final String contactNumber = data.getString(ContactPhoneNumberQuery.PHONE_NUMBER);
                     mContactNumber.setText(contactNumber);
                 }
                 break;
         }
-
     }
+
 
     @Override
     public void onLoaderReset(Loader loader) {
@@ -130,7 +165,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         int QUERY_ID = 3;
         String[] PROJECTION = {CommonDataKinds.Phone._ID, CommonDataKinds.Phone.NUMBER};
         String SELECTION = Data.MIMETYPE + " = '" + CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'";
-        int PHONE_ID = 0;
         int PHONE_NUMBER = 1;
     }
     /**
@@ -139,10 +173,10 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
     public interface ContactAddressQuery {
         // A unique query ID to distinguish queries being run by the
         // LoaderManager.
-        final static int QUERY_ID = 4;
+        int QUERY_ID = 4;
 
         // The query projection (columns to fetch from the provider)
-        final static String[] PROJECTION = {
+        String[] PROJECTION = {
                 CommonDataKinds.StructuredPostal._ID,
                 CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS,
                 CommonDataKinds.StructuredPostal.TYPE,
@@ -151,14 +185,14 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
 
         // The query selection criteria. In this case matching against the
         // StructuredPostal content mime type.
-        final static String SELECTION =
+        String SELECTION =
                 Data.MIMETYPE + "='" + CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE + "'";
 
         // The query column numbers which map to each value in the projection
-        final static int ID = 0;
-        final static int ADDRESS = 1;
-        final static int TYPE = 2;
-        final static int LABEL = 3;
+        int ID = 0;
+        int ADDRESS = 1;
+        int TYPE = 2;
+        int LABEL = 3;
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.bt.contactlist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract.*;
+import android.provider.ContactsContract.Contacts;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -17,16 +18,17 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Monika on 11/11/2016.
  * Class for list fragment
  */
 
-public class ListFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks {
+public class ListFragment extends Fragment implements AdapterView.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private onClickItemListener mOnItemSelectionListener;
-    private static ArrayList<Contact> mContact;
+    private final int REQUEST_CODE = 1;
     private final String TAG = ListFragment.class.getSimpleName();
     private ListView  mListView;
     private CustomAdapter mAdapter;
@@ -65,6 +67,7 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
         mListView = (ListView) view.findViewById(R.id.listView);
+        view.findViewById(R.id.new_contact).setOnClickListener(this);
         return view;
 
     }
@@ -78,15 +81,16 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final Cursor cursor = mAdapter.getCursor();
         cursor.moveToPosition(position);
         // Creates a contact lookup Uri from contact ID and lookup_key
-        final Uri uri = Contacts.getLookupUri(
-                cursor.getLong(ContactsQuery.ID),
-                cursor.getString(ContactsQuery.LOOK_UP_KEY));
-        mOnItemSelectionListener.onContactSelectedListener(uri);
+        Uri lookupUri = Contacts.getLookupUri(
+                cursor.getLong(cursor.getColumnIndexOrThrow(Contacts._ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(Contacts.LOOKUP_KEY)));
+        mOnItemSelectionListener.onContactSelectedListener(lookupUri);
     }
 
     @Override
@@ -103,16 +107,33 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
     }
 
     @Override
-    public void onLoadFinished(Loader loader, Object data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == ContactsQuery.QUERY_ID) {
-            mAdapter.swapCursor((Cursor) data);
+            mAdapter.swapCursor(data);
         }
     }
+
 
     @Override
     public void onLoaderReset(Loader loader) {
         if (loader.getId() == ContactsQuery.QUERY_ID) {
             mAdapter.swapCursor(null);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.new_contact) {
+            Intent intent = new Intent(getActivity(), AddContactActivity.class);
+            /*intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);*/
+            startActivityForResult(intent, REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+           getLoaderManager().restartLoader(ContactsQuery.QUERY_ID, null, this);
         }
     }
 
@@ -133,15 +154,9 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
                 Contacts._ID,
                 Contacts.LOOKUP_KEY,
                 Contacts.DISPLAY_NAME,
+                Contacts.PHOTO_THUMBNAIL_URI,
                 SORT_ORDER
         };
-        // for fast look up assign int value to each column
-        int ID = 0;
-        int LOOK_UP_KEY = 1;
-        int DISPLAY_NAME = 2;
-        int SORT_KEY = 3;
-
-
     }
 }
 

@@ -281,7 +281,7 @@ public class ContactDetailFragment extends Fragment implements
             // When "edit" menu option selected
             case R.id.menu_edit_contact:
                 // Standard system edit contact intent
-                Intent intent = new Intent(Intent.ACTION_EDIT, mContactUri);
+                    Intent intent = new Intent(Intent.ACTION_EDIT, mContactUri);
 
                 // Because of an issue in Android 4.0 (API level 14), clicking Done or Back in the
                 // People app doesn't return the user to your app; instead, it displays the People

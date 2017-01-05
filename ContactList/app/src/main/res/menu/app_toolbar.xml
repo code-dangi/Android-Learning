@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/menu_group">
+    <item android:icon="@drawable/ic_action_name"
+        android:id="@+id/edit_contact"
+        android:title="@string/action_edit_contact"
+        app:showAsAction="ifRoom"/>
+    <item android:title="@string/action_delete_contact"
+        android:id="@+id/delete_contact"
+        app:showAsAction="ifRoom"/>
+    </group>
+    <item android:title="@string/action_contact_settings"/>
+</menu>

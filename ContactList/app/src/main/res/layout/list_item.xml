@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/contact_name"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
-    android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+    android:layout_width="match_parent"
+    android:orientation="horizontal">
+   <QuickContactBadge
+       android:layout_width="@dimen/badge_width"
+       android:layout_height="@dimen/badge_height"
+       android:id="@+id/quick_badge"
+       android:scaleType="centerCrop"/>
+    <TextView
+        android:id="@+id/contact_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:gravity="center_vertical"
+        android:padding="@dimen/padding"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+</LinearLayout>
