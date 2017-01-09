@@ -4,17 +4,13 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,7 +24,6 @@ import static com.bt.contactlist.IConstants.REQUEST_CODE_ADD_CONTACT;
  */
 
 public class AddContactActivity extends AppCompatActivity implements View.OnClickListener {
-    private final String TAG = AddContactActivity.class.getSimpleName();
     private TextView mName;
     private TextView mPhoneNumber;
     private String mAccountType;
@@ -53,8 +48,60 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         if (v.getId() == R.id.save_contact) {
             ContentResolver contentResolver = getContentResolver();
-            insertContact(contentResolver, mName.getText().toString(), mPhoneNumber.getText().toString());
-            /*ContentValues values = new ContentValues();
+            String Name = mName.getText().toString();
+            String PhoneNumber =  mPhoneNumber.getText().toString();
+            if (Name.equals("") || PhoneNumber.equals("")) {
+               showNotification("Both Name and Phone number are mandatory");
+            } else {
+                insertContact(contentResolver, Name, PhoneNumber);
+                setResult(REQUEST_CODE_ADD_CONTACT, null);
+                finish();
+            }
+        }
+    }
+    public boolean insertContact(ContentResolver contactAdder, String firstName, String mobileNumber) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, mAccountType)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, mAccountName).build());
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract
+                        .CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,firstName).build());
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mobileNumber).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
+        try {
+            contactAdder.applyBatch(ContactsContract.AUTHORITY, ops);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * called to show snack bar with title
+     * @param title title for dialog
+     */
+    private void showNotification(String title) {
+        Snackbar notification = Snackbar.make(mName, title, Snackbar.LENGTH_SHORT);
+        notification.show();
+    }
+    private void getAccountDetails() {
+        String permission = "android.permission.GET_ACCOUNTS";
+        int res = checkCallingOrSelfPermission(permission);
+        if(res == PackageManager.PERMISSION_GRANTED) {
+            Account[] accounts = AccountManager.get(this).getAccounts();
+            for (Account account : accounts) {
+                if (account.type.equals("com.google")) {
+                    mAccountName = account.name;
+                    mAccountType = account.type;
+                }
+            }
+        }
+
+    }
+    // to add values in contact table one by one
+    private void addDetail() {
+         /*ContentValues values = new ContentValues();
             values.put(ContactsContract.RawContacts.ACCOUNT_NAME, mAccountName);
             values.put(ContactsContract.RawContacts.ACCOUNT_TYPE, mAccountType);
             Uri rawContactUri = contentResolver.insert(ContactsContract.RawContacts.CONTENT_URI,
@@ -75,38 +122,5 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
                     toString());
             contentResolver.insert(ContactsContract.Data.CONTENT_URI, values);
             */
-            setResult(REQUEST_CODE_ADD_CONTACT, null);
-            finish();
-        }
     }
-    public static boolean insertContact(ContentResolver contactAdder, String firstName, String mobileNumber) {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI).withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null).withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null).build());
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,firstName).build());
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mobileNumber).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
-
-        try {
-            contactAdder.applyBatch(ContactsContract.AUTHORITY, ops);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-    private void getAccountDetails() {
-        String permission = "android.permission.GET_ACCOUNTS";
-        int res = checkCallingOrSelfPermission(permission);
-        if(res == PackageManager.PERMISSION_GRANTED) {
-            Account[] accounts = AccountManager.get(this).getAccounts();
-            for (Account account : accounts) {
-                if (account.type.equals("com.google")) {
-                    mAccountName = account.name;
-                    mAccountType = account.type;
-                }
-            }
-        }
-
-    }
-
 }

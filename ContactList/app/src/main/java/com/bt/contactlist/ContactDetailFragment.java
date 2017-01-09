@@ -34,7 +34,6 @@ import static com.bt.contactlist.IConstants.REQUEST_CODE_EDIT_CONTACT;
 
 public class ContactDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     private static final String TAG = ContactDetailFragment.class.getSimpleName();
-    private onDeleteContactListener mOnDeleteListener;
     private Uri mContactUri;
     private TextView mContactName;
     private TextView mContactNumber;
@@ -43,7 +42,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         Log.d(TAG, "onCreate");
     }
 
@@ -54,17 +52,14 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         loadDisplayImage(contactLookUpUri);
         getLoaderManager().restartLoader(ContactDetailQuery.QUERY_ID, null, this);
         getLoaderManager().restartLoader(ContactPhoneNumberQuery.QUERY_ID, null, this);
-        getLoaderManager().restartLoader(ContactAddressQuery.QUERY_ID, null, this);
     }
 
     private void loadDisplayImage(Uri contactLookUpUri) {
         Uri displayPhotoUri = Uri.withAppendedPath(contactLookUpUri, Contacts.Photo.DISPLAY_PHOTO);
-        if (displayPhotoUri == null) {
-            mDisplayPhoto.setImageResource(R.mipmap.ic_launcher_contact);
-        } else {
             Glide.with(getActivity()).load(displayPhotoUri).into(mDisplayPhoto);
-        }
-
+       /* if (mDisplayPhoto.getDrawable() == null) {
+            mDisplayPhoto.setImageResource(R.mipmap.ic_launcher_contact);
+        }*/
     }
 
     @Nullable
@@ -75,12 +70,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         mContactName = (TextView) view.findViewById(R.id.name);
         mContactNumber = (TextView) view.findViewById(R.id.number);
         mDisplayPhoto = (ImageView) view.findViewById(R.id.contact_photo);
-        if(savedInstanceState != null){
-            mContactName.setText(savedInstanceState.getCharSequence(
-                    IConstants.BUNDLE_SAVED_INSTANCE_NAME));
-            mContactNumber.setText(savedInstanceState.getCharSequence(
-                    IConstants.BUNDLE_SAVED_INSTANCE_CONTACT_NUMBER));
-        }
         return view;
     }
 
@@ -98,20 +87,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.edit_contact:
-                Intent intent = new Intent(Intent.ACTION_EDIT, mContactUri);
-                startActivityForResult(intent, REQUEST_CODE_EDIT_CONTACT);
-                break;
-            case R.id.delete_contact:
-                getActivity().getContentResolver().delete(mContactUri, null, null);
-                mOnDeleteListener.onDelete();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -125,10 +100,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         snackbar.show();
     }
 
-    // interface to communicate back to activity
-    interface onDeleteContactListener {
-        public void onDelete();
-    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.app_toolbar, menu);
@@ -177,9 +148,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         // nothing to do here
     }
 
-    public void setOnDeleteListener (onDeleteContactListener onDeleteListener) {
-        mOnDeleteListener = onDeleteListener;
-    }
     public interface ContactDetailQuery {
         int QUERY_ID = 2;
         String[] PROJECTION = {Contacts._ID, Contacts.DISPLAY_NAME};
@@ -192,27 +160,6 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         String SELECTION = Data.MIMETYPE + " = '" + CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'";
         int PHONE_NUMBER = 1;
     }
-    /**
-     * This interface defines constants used by address retrieval queries.
-     */
-    public interface ContactAddressQuery {
-        // A unique query ID to distinguish queries being run by the
-        // LoaderManager.
-        int QUERY_ID = 4;
-        // The query projection (columns to fetch from the provider)
-        String[] PROJECTION = {
-                CommonDataKinds.StructuredPostal._ID,
-                CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS,
-                CommonDataKinds.StructuredPostal.TYPE,
-                CommonDataKinds.StructuredPostal.LABEL,
-        };
-
-        // The query selection criteria. In this case matching against the
-        // StructuredPostal content mime type.
-        String SELECTION =
-                Data.MIMETYPE + "='" + CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE + "'";
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);

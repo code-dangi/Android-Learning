@@ -29,10 +29,10 @@ import static com.bt.contactlist.IConstants.REQUEST_CODE_ADD_CONTACT;
  * Class for list fragment
  */
 
-public class ListFragment extends Fragment implements AdapterView.OnItemClickListener,
+public class ContactListFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private onClickItemListener mOnItemSelectionListener;
-    private final String TAG = ListFragment.class.getSimpleName();
+    private final String TAG = ContactListFragment.class.getSimpleName();
     private ListView  mListView;
     private CustomAdapter mAdapter;
 
@@ -46,7 +46,7 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         }
     }
     // fragment require a default constructor
-    public ListFragment () {}
+    public ContactListFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,8 +81,8 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         mAdapter = new CustomAdapter(getContext());
         mListView.setOnItemClickListener(this);
         mListView.setAdapter(mAdapter);
-        //getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
-        getContactCursor(getActivity().getContentResolver(), "s");
+        getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        /*getContactCursor(getActivity().getContentResolver(), "s");*/
     }
 
 
@@ -94,28 +94,9 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         Uri lookupUri = Contacts.getLookupUri(
                 cursor.getLong(cursor.getColumnIndexOrThrow(Contacts._ID)),
                 cursor.getString(cursor.getColumnIndexOrThrow(Contacts.LOOKUP_KEY)));
-        mOnItemSelectionListener.onContactSelectedListener(lookupUri);
+        mOnItemSelectionListener.onContactSelectionListener(lookupUri);
     }
-    // function to read contacts
-    public void getContactCursor(ContentResolver contactHelper, String startsWith) {
 
-        String[] projection = { ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER };
-        Cursor cur = null;
-
-        try {
-            if (startsWith != null && !startsWith.equals("")) {
-                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " like \"" + startsWith + "%\"", null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-            } else {
-                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-            }
-            if (cur != null) {
-                cur.moveToFirst();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mAdapter.swapCursor(cur);
-    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == ContactsQuery.QUERY_ID) {
@@ -126,7 +107,6 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
             Log.d(TAG, "onCreateLoader: cant create cursor loader");
             return null;
         }
-
     }
 
     @Override
@@ -155,15 +135,19 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Snackbar snackbar = Snackbar.make(mListView, "Contact Added Successfully", Snackbar.LENGTH_SHORT);
-        snackbar.show();
         if (requestCode == REQUEST_CODE_ADD_CONTACT && resultCode == RESULT_OK) {
-           getLoaderManager().restartLoader(ContactsQuery.QUERY_ID, null, this);
+            getLoaderManager().restartLoader(ContactsQuery.QUERY_ID, null, this);
+            showNotification("Contact Added Successfully");
         }
     }
 
+    private void showNotification(String message) {
+        Snackbar snackbar = Snackbar.make(mListView, message, Snackbar.LENGTH_SHORT);
+        snackbar.show();
+    }
+
     public interface onClickItemListener {
-        void onContactSelectedListener(Uri uri);
+        void onContactSelectionListener(Uri uri);
     }
     /*
     * this interface defines constants for cursor
@@ -182,6 +166,24 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
                 Contacts.PHOTO_THUMBNAIL_URI,
                 SORT_ORDER
         };
+    }
+    // function to read contacts another method
+    public void getContactCursor(ContentResolver contactHelper, String startsWith) {
+        String[] projection = { ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER };
+        Cursor cur = null;
+        try {
+            if (startsWith != null && !startsWith.equals("")) {
+                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " like \"" + startsWith + "%\"", null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            } else {
+                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            }
+            if (cur != null) {
+                cur.moveToFirst();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mAdapter.swapCursor(cur);
     }
 }
 
