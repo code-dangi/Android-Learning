@@ -1,12 +1,15 @@
 package com.bt.contactlist;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -19,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bt.contactlist.IConstants.REQUEST_CODE_ADD_CONTACT;
 
 /**
  * Created by Monika on 11/11/2016.
@@ -28,7 +32,6 @@ import static android.app.Activity.RESULT_OK;
 public class ListFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private onClickItemListener mOnItemSelectionListener;
-    private final int REQUEST_CODE = 1;
     private final String TAG = ListFragment.class.getSimpleName();
     private ListView  mListView;
     private CustomAdapter mAdapter;
@@ -78,7 +81,8 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         mAdapter = new CustomAdapter(getContext());
         mListView.setOnItemClickListener(this);
         mListView.setAdapter(mAdapter);
-        getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        //getLoaderManager().initLoader(ContactsQuery.QUERY_ID, null, this);
+        getContactCursor(getActivity().getContentResolver(), "s");
     }
 
 
@@ -92,7 +96,26 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
                 cursor.getString(cursor.getColumnIndexOrThrow(Contacts.LOOKUP_KEY)));
         mOnItemSelectionListener.onContactSelectedListener(lookupUri);
     }
+    // function to read contacts
+    public void getContactCursor(ContentResolver contactHelper, String startsWith) {
 
+        String[] projection = { ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER };
+        Cursor cur = null;
+
+        try {
+            if (startsWith != null && !startsWith.equals("")) {
+                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " like \"" + startsWith + "%\"", null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            } else {
+                cur = contactHelper.query (ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            }
+            if (cur != null) {
+                cur.moveToFirst();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mAdapter.swapCursor(cur);
+    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == ContactsQuery.QUERY_ID) {
@@ -126,13 +149,15 @@ public class ListFragment extends Fragment implements AdapterView.OnItemClickLis
         if (v.getId() == R.id.new_contact) {
             Intent intent = new Intent(getActivity(), AddContactActivity.class);
             /*intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);*/
-            startActivityForResult(intent, REQUEST_CODE);
+            startActivityForResult(intent, REQUEST_CODE_ADD_CONTACT);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        Snackbar snackbar = Snackbar.make(mListView, "Contact Added Successfully", Snackbar.LENGTH_SHORT);
+        snackbar.show();
+        if (requestCode == REQUEST_CODE_ADD_CONTACT && resultCode == RESULT_OK) {
            getLoaderManager().restartLoader(ContactsQuery.QUERY_ID, null, this);
         }
     }

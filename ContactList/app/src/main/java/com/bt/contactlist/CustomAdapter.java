@@ -42,9 +42,9 @@ public class CustomAdapter extends CursorAdapter {
         viewHolder.contactBadge = (QuickContactBadge) itemView.findViewById(R.id.quick_badge);
         mIdColumn = cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID);
         mDisplayNameColumn = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME);
-        mThumbnailUriColumn = cursor.getColumnIndexOrThrow(ContactsContract
-                .Contacts.PHOTO_THUMBNAIL_URI);
-        mLookupKeyColumn = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY);
+        /*mThumbnailUriColumn = cursor.getColumnIndexOrThrow(ContactsContract
+                .Contacts.PHOTO_THUMBNAIL_URI);*/
+        /*mLookupKeyColumn = cursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY);*/
         itemView.setTag(viewHolder);
         return itemView;
     }
@@ -54,17 +54,17 @@ public class CustomAdapter extends CursorAdapter {
         final ViewHolder holder = (ViewHolder) view.getTag();
         final String displayName = cursor.getString(mDisplayNameColumn);
         // get the content URI for the contact
-        mLookupUri = ContactsContract.Contacts.getLookupUri(cursor.getLong(mIdColumn),
+        /*mLookupUri = ContactsContract.Contacts.getLookupUri(cursor.getLong(mIdColumn),
                 cursor.getString(mLookupKeyColumn));
-        holder.contactBadge.assignContactUri(mLookupUri);
+        holder.contactBadge.assignContactUri(mLookupUri);*/
         // check if thumbnail uri is present or not
-        String thumbnailUri = cursor.getString(mThumbnailUriColumn);
+        /*String thumbnailUri = cursor.getString(mThumbnailUriColumn);
         if (thumbnailUri == null) {
             Log.d("Adapter", "bindView: no uri");
             holder.contactBadge.setImageResource(R.mipmap.ic_launcher);
         } else {
             holder.contactBadge.setImageBitmap(loadThumbNail(thumbnailUri));
-        }
+        }*/
 
         holder.textView.setText(displayName);
     }
