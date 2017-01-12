@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--margin for the recycler view-->
+    <dimen name="margin_top">10dp</dimen>
+    <dimen name="margin_left">10dp</dimen>
+
+    <!--padding for item in recycler view-->
+    <dimen name="padding_left">5dp</dimen>
+    <dimen name="padding_top">5dp</dimen>
+
+    <!--image dimens-->
+    <dimen name="image_height">100dp</dimen>
+    <dimen name="image_width">150dp</dimen>
+
+    <!--toolbar dimens-->
+    <dimen name="toolbar_height">60dp</dimen>
+</resources>
