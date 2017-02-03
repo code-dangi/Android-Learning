@@ -28,6 +28,7 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
     private TextView mPhoneNumber;
     private String mAccountType;
     private String mAccountName;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +51,8 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
             ContentResolver contentResolver = getContentResolver();
             String Name = mName.getText().toString();
             String PhoneNumber =  mPhoneNumber.getText().toString();
-            if (Name.equals("") || PhoneNumber.equals("")) {
-               showNotification("Both Name and Phone number are mandatory");
+            if (Name.equals("") || PhoneNumber.equals("")) { // use Text Utils to check empty text view
+                showNotification("Both Name and Phone number are mandatory");
             } else {
                 insertContact(contentResolver, Name, PhoneNumber);
                 setResult(REQUEST_CODE_ADD_CONTACT, null);
@@ -59,6 +60,7 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
             }
         }
     }
+
     public boolean insertContact(ContentResolver contactAdder, String firstName, String mobileNumber) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
@@ -69,14 +71,16 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
                 .withValue(ContactsContract.Data.MIMETYPE, ContactsContract
                         .CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,firstName).build());
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI).withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mobileNumber).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0).withValue(ContactsContract.Data.MIMETYPE,ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE).withValue(ContactsContract.CommonDataKinds.Phone.NUMBER,mobileNumber).withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE).build());
         try {
             contactAdder.applyBatch(ContactsContract.AUTHORITY, ops);
-        } catch (Exception e) {
+        } catch (Exception e) { // no general
             return false;
         }
         return true;
     }
+
     /**
      * called to show snack bar with title
      * @param title title for dialog
@@ -90,6 +94,7 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
         int res = checkCallingOrSelfPermission(permission);
         if(res == PackageManager.PERMISSION_GRANTED) {
             Account[] accounts = AccountManager.get(this).getAccounts();
+            // check for null
             for (Account account : accounts) {
                 if (account.type.equals("com.google")) {
                     mAccountName = account.name;
@@ -99,6 +104,7 @@ public class AddContactActivity extends AppCompatActivity implements View.OnClic
         }
 
     }
+
     // to add values in contact table one by one
     private void addDetail() {
          /*ContentValues values = new ContentValues();
