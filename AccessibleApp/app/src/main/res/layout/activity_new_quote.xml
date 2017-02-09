@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/padding">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:elevation="@dimen/elevation_four"
+        android:id="@+id/quote"
+        android:hint="@string/enter_quote"
+        android:contentDescription="@string/enter_quote"
+        android:maxLines="1"
+        android:gravity="center"
+        android:layout_margin="@dimen/text_margin" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/enter_author"
+        android:hint="@string/enter_author"
+        android:id="@+id/author3"
+        android:elevation="@dimen/elevation_four"
+        android:maxLines="1"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/text_margin"
+        android:gravity="center"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/enter_detail"
+        android:id="@+id/detail"
+        android:elevation="@dimen/elevation_four"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/text_margin"
+        android:gravity="center"
+        android:contentDescription="@string/enter_detail"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/save_button"
+        android:contentDescription="@string/save_button"
+        android:background="@color/colorAccent"
+        android:id="@+id/save_button" />
+
+</LinearLayout>

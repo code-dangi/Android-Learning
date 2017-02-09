@@ -55,7 +55,7 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
 
     private void loadDisplayImage(Uri contactLookUpUri) {
         Uri displayPhotoUri = Uri.withAppendedPath(contactLookUpUri, Contacts.Photo.DISPLAY_PHOTO);
-            Glide.with(getActivity()).load(displayPhotoUri).into(mDisplayPhoto);
+            Glide.with(getActivity()).load(displayPhotoUri).into(mDisplayPhoto); // check getActivity for null
        /* if (mDisplayPhoto.getDrawable() == null) {
             mDisplayPhoto.setImageResource(R.mipmap.ic_launcher_contact);
         }*/
@@ -125,6 +125,7 @@ public class ContactDetailFragment extends Fragment implements LoaderManager.Loa
         if (mContactUri == null) {
             return;
         }
+        // check for data null
         switch (loader.getId()) {
             case ContactDetailQuery.QUERY_ID:
                 if (data.moveToFirst()) {

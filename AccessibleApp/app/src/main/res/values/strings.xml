@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">My Daily Quotes</string>
+    <string name="quote">Quote for the Day</string>
+    <string name="author">Author</string>
+    <string-array name="quote_array">
+        <item>Get the Hell out of your mind and into the Life</item>
+        <item>Give it back</item>
+        <item>Stay strong</item>
+        <item>Giving up is easy</item>
+        <item>Look within not out</item>
+        <item>Never choose a book by its cower</item>
+        <item>Stay Foolish Stay Hungry</item>
+        <item>Simplicity is hardest thing to achieve</item>
+        <item>Wake up and dont rest until u get your Dream</item>
+        <item>Rest-less</item>
+        <item>Balancing life</item>
+        <item>Respect Elders</item>
+        <item>Karma is Bitch</item>
+        <item>Nature is best teacher</item>
+        <item>Status is never defined by money</item>
+        <item>There are lots of things that cant be bought by money</item>
+        <item>Whatsap is time waste</item>
+        <item>Achieving calmness</item>
+        <item>Consistency is the key BABA</item>
+    </string-array>
+    <string-array name="author_array">
+        <item>The Great Monika Dangi</item>
+    </string-array>
+    <!-- content description of each component-->
+    <string name="collapsing_bar_description">@string/app_name</string>
+    <string name="image_content_description">button to add new quote</string>
+    <string name="header_image">Blue sky image for header</string>
+    <string name="edit_text_quote_description">Enter the Quote here in edit box</string>
+    <string name="edit_text_author_description">Enter the author name here in edit box</string>
+    <string name="edit_text_detail_description">Enter the Quote detail here in edit box you can leave it empty also</string>
+    <string name="save_button_description">Double click to save the added quote</string>
+    <!--hints for text view-->
+    <string name="enter_quote">Add quote here</string>
+    <string name="enter_author">Add Author</string>
+    <string name="enter_detail">Add Detail</string>
+    <string name="save_button">Save the quote</string>
+</resources>

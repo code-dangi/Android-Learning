@@ -30,13 +30,14 @@ public class Dialog extends DialogFragment implements DialogInterface.OnClickLis
     public android.app.Dialog onCreateDialog(Bundle savedInstanceState) {
         String title = getArguments().getString(DIALOG_TITLE);
         mIdentificationCode = getArguments().getInt(IDENTIFICATION_CODE);
+        // use super methods and customize
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(DIALOG_OK_BUTTON, this)
                 .create();
     }
-
+    // use interface
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         ((MainActivity) getActivity()).doPositiveClick(mIdentificationCode);

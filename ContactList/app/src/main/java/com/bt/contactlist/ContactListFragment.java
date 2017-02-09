@@ -51,18 +51,6 @@ public class ContactListFragment extends Fragment implements AdapterView.OnItemC
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*mContact = new ArrayList<Contact>(mContacts);
-        if (savedInstanceState == null) {
-            Contact c;
-            for (int i = 0; i < mContacts; i++) {
-                c = new Contact(i);
-                mContact.add(c);
-            }
-        }
-        // restore Contact from the Bundle after Rotation
-        else{
-            mContact =  (ArrayList<Contact>) savedInstanceState.getSerializable(getResources().getString(R.string.name_list));
-        }*/
     }
 
 

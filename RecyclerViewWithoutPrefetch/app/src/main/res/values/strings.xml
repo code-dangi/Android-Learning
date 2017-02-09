@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Recycler View Without Prefetch</string>
+    <string name="app_name">Recycler View Prefetch</string>
     <string-array name="url_string_array">
         <item>http://www.freeiconspng.com/uploads/floral-background-png-17.png</item>
         <item>http://www.freeiconspng.com/uploads/floral-swirls-photoshop-background-png-6.png</item>

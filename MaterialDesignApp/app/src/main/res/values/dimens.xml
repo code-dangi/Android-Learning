@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="surface_height">300dp</dimen>
+    <dimen name="elevation_first">4dp</dimen>
+    <dimen name="elevation_second">8dp</dimen>
+    <dimen name="elevation_third">16dp</dimen>
+
+    <!--margin for fab-->
+    <dimen name="margin">16dp</dimen>
+</resources>

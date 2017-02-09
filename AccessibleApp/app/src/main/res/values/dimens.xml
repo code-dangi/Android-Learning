@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="button_width">@dimen/button_height</dimen>
+    <!--padding-->
+    <dimen name="padding">16dp</dimen>
+    <!--margins for button-->
+    <dimen name="margin">16dp</dimen>
+
+    <!--footer toolbar dimens-->
+    <dimen name="toolbar_extended_height">100dp</dimen>
+    <dimen name="toolbar_collapsing_height">56dp</dimen>
+
+    <dimen name="quote_height">50dp</dimen>
+    <dimen name="author_height">30dp</dimen>
+
+    <!--recycler view margins-->
+    <dimen name="margin_top_recycler">100dp</dimen>
+
+    <dimen name="elevation_four">4dp</dimen>
+    <dimen name="text_margin">20dp</dimen>
+</resources>

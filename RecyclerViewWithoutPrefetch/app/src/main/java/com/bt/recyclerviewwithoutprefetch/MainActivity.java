@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             Snackbar snackbar = Snackbar.make(mRecyclerView, "prefetch is de-sabled", Snackbar.LENGTH_INDEFINITE);
             snackbar.show();
         }
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(mLayoutManager);
         downloadImages();
     }
 

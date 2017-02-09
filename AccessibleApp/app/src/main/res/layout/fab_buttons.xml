@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/padding">
+    <ImageView
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:background="@drawable/oval_ripple"
+        android:src="@drawable/ic_action_new"
+        android:id="@+id/fab1"
+        android:elevation="6dp"
+        android:layout_margin="@dimen/margin"
+        android:contentDescription="@string/image_content_description"
+        android:stateListAnimator="@drawable/fab_pressed_anim"
+        android:clickable="true"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_height"
+        android:id="@+id/fab2"
+        app:layout_constraintLeft_toRightOf="@id/fab1"
+        android:layout_margin="@dimen/margin"
+        android:src="@drawable/ic_action_new"
+        app:fabSize="auto"
+        app:rippleColor="@color/colorControlHighlight"
+        android:clickable="true"/>
+</android.support.constraint.ConstraintLayout>
